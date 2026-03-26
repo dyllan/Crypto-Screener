@@ -614,7 +614,11 @@ function render(){
       <div class="cardtop">
         <div class="ct">
           <div class="cn">
-            <div class="cname">${c.name}</div><div class="csym">${c.sym}</div>
+            <a href="https://www.bitget.com/futures/usdt/${c.bin}" target="_blank" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+              <div class="cname" style="border-bottom:1px solid rgba(255,255,255,0.1)">${c.name}</div>
+              <div class="csym">${c.sym}</div>
+              <div style="font-size:9px;color:var(--blue);letter-spacing:1px;">↗ BITGET</div>
+            </a>
             ${c.lowLiq?'<div class="lowliq">⚠️ LOW LIQ</div>':''}
             ${isRev?'<div class="revtag">↺ REVERSAL</div>':''}
           </div>
