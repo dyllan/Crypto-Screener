@@ -694,14 +694,28 @@ function toggleAuto(){
 }
 
 function openBitget(symbol){
-  const appUrl=`bitget://futures?symbol=${symbol}`;
-  const webUrl=`https://www.bitget.com/futures/usdt/${symbol}`;
-  window.location=appUrl;
-  setTimeout(()=>window.open(webUrl,'_blank'),1500);
+  const txt=symbol;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).catch(()=>fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+  const t=document.getElementById('toast');
+  t.textContent='✓ '+txt+' COPIED — PASTE IN BITGET SEARCH';
+  t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';},2500);
+  setTimeout(()=>{window.location='bitget://';},300);
+}
+
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.cssText='position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
 }
 
 window.addEventListener('load',()=>startScan());
 </script>
 
+<div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:#0d1117;border:1px solid #00aaff;color:#00aaff;padding:10px 18px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 0 12px rgba(0,170,255,0.3);pointer-events:none;"></div>
 </body>
 </html>
