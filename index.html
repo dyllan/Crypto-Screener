@@ -206,10 +206,12 @@ border-color: #3a5878 !important;
 
 .err { margin:10px 16px 0; padding:10px 14px; background:rgba(255,68,102,0.06); border:1px solid rgba(255,68,102,0.3); border-radius:5px; font-size:11px; color:var(–red); line-height:1.6; display:none; }
 .empty { text-align:center; padding:60px 20px; color:var(–dim); font-size:11px; letter-spacing:2px; line-height:2.2; }
+html { background:#060d1a !important; background-color:#060d1a !important; }
+body { background:#060d1a !important; background-color:#060d1a !important; }
 </style>
 
 </head>
-<body>
+<body style="background:#060d1a !important;background-color:#060d1a !important;">
 
 <div class="hdr">
   <div>
@@ -529,6 +531,8 @@ async function runAIAnalysis(){
   out.className='ai-out loading';
   out.innerHTML='<span style="color:var(--orange);opacity:0.6;font-size:10px;">▸ FETCHING LIVE DATA...</span>';
   if(!aiOpen)toggleAIPanel();
+  // Yield so this runs independently of any ongoing scan
+  await new Promise(r=>setTimeout(r,0));
   try{
     let live=null;
     if(sym&&(ctxMode==='entry'||ctxMode==='active'||ctxMode==='exit')){
@@ -574,6 +578,8 @@ function fmtAI(text){
 async function quickAnalyse(sym,btnEl,resEl){
   if(btnEl.classList.contains('loading'))return;
   btnEl.classList.add('loading');btnEl.textContent='⟳ CALLING AI...';resEl.style.display='none';
+  // Yield immediately so this runs independently of any ongoing scan
+  await new Promise(r=>setTimeout(r,0));
   try{
     const live=await fetchLive(sym);
     const margin=parseFloat(document.getElementById('margin').value)||100;
@@ -732,6 +738,8 @@ async function startScan(){
   document.getElementById('list').innerHTML='<div class="empty">SCANNING...<br><span style="font-size:10px">15m + 1H + 4H · 50 coins</span></div>';
   document.getElementById('scanBtn').textContent='0%';document.getElementById('scanBtn').style.opacity='0.5';
   setProg(3);
+  // Yield to event loop so AI calls and user interactions aren't blocked
+  await new Promise(r=>setTimeout(r,0));
   try{
     const tickRes=await safeFetch('https://api.binance.com/api/v3/ticker/24hr');
     if(!tickRes.ok)throw new Error('Binance unavailable');
@@ -746,11 +754,11 @@ async function startScan(){
       let m15data=null,h1data=null,h4data=null;
       try{
         const r15=await safeFetch(`https://api.binance.com/api/v3/klines?symbol=${coin.bin}&interval=15m&limit=50`);
-        m15data=analyse(r15.ok?await r15.json():null,price);await new Promise(r=>setTimeout(r,50));
+        m15data=analyse(r15.ok?await r15.json():null,price);await new Promise(r=>setTimeout(r,80));
         const r1=await safeFetch(`https://api.binance.com/api/v3/klines?symbol=${coin.bin}&interval=1h&limit=50`);
-        h1data=analyse(r1.ok?await r1.json():null,price);await new Promise(r=>setTimeout(r,50));
+        h1data=analyse(r1.ok?await r1.json():null,price);await new Promise(r=>setTimeout(r,80));
         const r4=await safeFetch(`https://api.binance.com/api/v3/klines?symbol=${coin.bin}&interval=4h&limit=30`);
-        h4data=analyse(r4.ok?await r4.json():null,price);await new Promise(r=>setTimeout(r,50));
+        h4data=analyse(r4.ok?await r4.json():null,price);await new Promise(r=>setTimeout(r,80));
       }catch(e){m15data=m15data||analyse(null,price);h1data=h1data||analyse(null,price);h4data=h4data||analyse(null,price);}
       const s=score(m15data,h1data,h4data,ch,high24,low24,price);
       processed.push({...coin,price,ch,vol24,high24,low24,lowLiq,
