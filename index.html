@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Screener">
-<title>MARKET SCREENER v5</title>
+<title>MARKET SCREENER v6·AI</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
   :root{--bg:#080c10;--panel:#0d1117;--border:#1e2d3d;--green:#00ff88;--red:#ff3355;--yellow:#ffd700;--blue:#00aaff;--purple:#aa55ff;--dim:#4a5568;--text:#c9d1d9;}
@@ -108,13 +108,46 @@
   .bfill{height:100%;border-radius:2px;opacity:0.6;}
   .err{margin:10px 16px 0;padding:12px 14px;background:rgba(255,51,85,0.08);border:1px solid var(--red);border-radius:5px;font-size:11px;color:var(--red);line-height:1.6;display:none;}
   .empty{text-align:center;padding:60px 20px;color:var(--dim);font-size:11px;letter-spacing:2px;line-height:2.2;}
+
+.ai-panel{margin:10px 16px 0;border:1px solid rgba(255,215,0,0.3);border-radius:6px;background:rgba(255,215,0,0.02);overflow:hidden;}
+.ai-header{padding:10px 14px;background:rgba(255,215,0,0.05);border-bottom:1px solid rgba(255,215,0,0.15);display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.ai-title{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;color:#ffd700;}
+.ai-toggle{font-size:9px;color:#ffd700;opacity:0.7;letter-spacing:1px;}
+.ai-body{padding:12px 14px;display:none;}
+.ai-body.open{display:block;}
+.ai-trade-box{margin-bottom:10px;padding:10px 12px;background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:4px;}
+.ai-trade-lbl{font-size:9px;color:#ffd700;letter-spacing:2px;margin-bottom:8px;}
+.ai-trade-row{display:flex;gap:8px;flex-wrap:wrap;}
+.ai-trade-item{display:flex;flex-direction:column;gap:3px;}
+.ai-trade-item-lbl{font-size:8px;color:var(–dim);letter-spacing:1px;}
+.ai-trade-item input{background:#111820;border:1px solid var(–border);color:var(–text);padding:6px 9px;font-family:‘Share Tech Mono’,monospace;font-size:11px;border-radius:3px;width:90px;outline:none;}
+.ai-trade-item input:focus{border-color:#ffd700;}
+.ai-sym-row{display:flex;gap:8px;margin-bottom:10px;}
+.ai-sym-input{flex:1;background:#111820;border:1px solid var(–border);color:var(–text);padding:9px 12px;font-family:‘Share Tech Mono’,monospace;font-size:12px;border-radius:3px;outline:none;letter-spacing:1px;}
+.ai-sym-input::placeholder{color:var(–dim);}
+.ai-sym-input:focus{border-color:#ffd700;}
+.ai-btn{padding:9px 14px;border-radius:3px;font-family:‘Share Tech Mono’,monospace;font-size:10px;cursor:pointer;letter-spacing:1px;border:1px solid rgba(255,215,0,0.5);background:rgba(255,215,0,0.08);color:#ffd700;transition:all 0.15s;white-space:nowrap;}
+.ai-btn:active{transform:scale(0.95);}
+.ai-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.ai-modes{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.ai-modes-lbl{font-size:9px;color:var(–dim);}
+.ai-mode{padding:5px 11px;border-radius:3px;font-family:‘Share Tech Mono’,monospace;font-size:9px;cursor:pointer;letter-spacing:1px;border:1px solid var(–border);background:transparent;color:var(–dim);transition:all 0.15s;}
+.ai-mode.on{border-color:#ffd700;color:#ffd700;background:rgba(255,215,0,0.07);}
+.ai-out{background:#060a0e;border:1px solid var(–border);border-left:3px solid rgba(255,215,0,0.5);border-radius:3px;padding:12px 14px;min-height:54px;font-size:11px;line-height:1.85;color:var(–text);position:relative;}
+.ai-out.loading::after{content:’’;position:absolute;bottom:10px;right:12px;width:5px;height:5px;border-radius:50%;background:#ffd700;animation:aiblink 0.7s infinite alternate;}
+@keyframes aiblink{from{opacity:0.2}to{opacity:1}}
+.ai-hint{color:var(–dim);font-size:10px;line-height:2.1;}
+.card-ai-btn{width:100%;padding:8px;background:rgba(255,215,0,0.03);border:none;border-top:1px solid rgba(255,215,0,0.12);color:rgba(255,215,0,0.75);font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.15s;}
+.card-ai-btn:active{background:rgba(255,215,0,0.08);}
+.card-ai-btn.loading{color:var(–dim);cursor:not-allowed;}
 </style>
+
 </head>
 <body>
 
 <div class="hdr">
   <div>
-    <div class="ttl">▶ SCREENER v5</div>
+    <div class="ttl">▶ SCREENER <span style="color:#ffd700;text-shadow:0 0 12px rgba(255,215,0,0.4)">v6·AI</span></div>
     <div class="sub" id="sub">SCANNING...</div>
   </div>
   <div class="btns">
@@ -134,6 +167,46 @@
     <span>MIN VOL $M:</span>
     <input type="number" id="minvol" value="15">
     <span style="font-size:9px;color:var(--dim)">filters thin coins</span>
+  </div>
+</div>
+
+<div class="ai-panel">
+  <div class="ai-header" onclick="toggleAIPanel()">
+    <div>
+      <div class="ai-title">⬡ AI ORACLE</div>
+      <div style="font-size:9px;color:var(--dim);margin-top:2px;">Entry · Review trade · Best setup · Exit call</div>
+    </div>
+    <div class="ai-toggle" id="aiToggle">▼ EXPAND</div>
+  </div>
+  <div class="ai-body" id="aiBody">
+    <div class="ai-trade-box">
+      <div class="ai-trade-lbl">▸ ACTIVE TRADE</div>
+      <div class="ai-trade-row">
+        <div class="ai-trade-item"><div class="ai-trade-item-lbl">PAIR</div><input id="ctPair" placeholder="TONUSDT" style="width:100px;"></div>
+        <div class="ai-trade-item"><div class="ai-trade-item-lbl">ENTRY</div><input id="ctEntry" placeholder="1.2471"></div>
+        <div class="ai-trade-item"><div class="ai-trade-item-lbl">STOP LOSS</div><input id="ctSL" placeholder="1.2408"></div>
+        <div class="ai-trade-item"><div class="ai-trade-item-lbl">TAKE PROFIT</div><input id="ctTP" placeholder="1.2600"></div>
+      </div>
+    </div>
+    <div class="ai-sym-row">
+      <input class="ai-sym-input" id="aiSymbol" placeholder="Symbol e.g. BTCUSDT" />
+      <button class="ai-btn" id="aiBtn" onclick="runAIAnalysis()">⬡ ANALYSE</button>
+    </div>
+    <div class="ai-modes">
+      <span class="ai-modes-lbl">MODE:</span>
+      <button class="ai-mode on" id="ctx-entry" onclick="setCtx('entry')">FIND ENTRY</button>
+      <button class="ai-mode" id="ctx-active" onclick="setCtx('active')">REVIEW TRADE</button>
+      <button class="ai-mode" id="ctx-top" onclick="setCtx('top')">BEST SETUP</button>
+      <button class="ai-mode" id="ctx-exit" onclick="setCtx('exit')">EXIT CALL</button>
+    </div>
+    <div class="ai-out" id="aiOut">
+      <div class="ai-hint">
+        FIND ENTRY — type a symbol, get entry / SL / TP<br>
+        REVIEW TRADE — fill active trade above, get hold or cut call<br>
+        BEST SETUP — AI picks the top trade from current scan<br>
+        EXIT CALL — direct recommendation on your open position
+      </div>
+    </div>
   </div>
 </div>
 
@@ -702,6 +775,169 @@ function fallbackCopy(txt){
   try{document.execCommand('copy');}catch(e){}
   document.body.removeChild(ta);
 }
+
+
+// ── AI ORACLE ──────────────────────────────────────────────────────────────
+let ctxMode='entry', aiOpen=false;
+
+function toggleAIPanel(){
+  aiOpen=!aiOpen;
+  document.getElementById('aiBody').classList.toggle('open',aiOpen);
+  document.getElementById('aiToggle').textContent=aiOpen?'▲ COLLAPSE':'▼ EXPAND';
+}
+function setCtx(m){
+  ctxMode=m;
+  document.querySelectorAll('.ai-mode').forEach(b=>b.classList.remove('on'));
+  document.getElementById('ctx-'+m).classList.add('on');
+}
+
+async function fetchLive(symbol){
+  const s=symbol.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const sym=s.endsWith('USDT')?s:s+'USDT';
+  try{
+    const [t,k15,k1h,k4h]=await Promise.all([
+      safeFetch('https://api.binance.com/api/v3/ticker/24hr?symbol='+sym).then(r=>r.json()),
+      safeFetch('https://api.binance.com/api/v3/klines?symbol='+sym+'&interval=15m&limit=50').then(r=>r.json()),
+      safeFetch('https://api.binance.com/api/v3/klines?symbol='+sym+'&interval=1h&limit=50').then(r=>r.json()),
+      safeFetch('https://api.binance.com/api/v3/klines?symbol='+sym+'&interval=4h&limit=30').then(r=>r.json()),
+    ]);
+    const price=parseFloat(t.lastPrice);
+    return{price,ch:parseFloat(t.priceChangePercent),high24:parseFloat(t.highPrice),low24:parseFloat(t.lowPrice),
+      m15:analyse(k15,price),h1:analyse(k1h,price),h4:analyse(k4h,price),sym};
+  }catch(e){return null;}
+}
+
+function buildPrompt(mode,data,cfg){
+  const margin=cfg.margin,lev=cfg.lev,notional=margin*lev;
+  const ctx='You are analysing crypto futures trades for Dyllan, a Gold Coast Australia trader on Bitget. Setup: $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Uses MA5/MA10/MA20 + RSI across 15m/1H/4H. Account ~$616 AUD. Be direct and specific. No disclaimers. No filler.';
+  if(mode==='entry'&&data){
+    return ctx+'\n\nLIVE DATA — '+data.sym+'\nPrice: $'+data.price+' | 24h: '+(data.ch>=0?'+':'')+data.ch.toFixed(2)+'% | High: '+data.high24+' | Low: '+data.low24+'\n15m: RSI '+data.m15.rsi+' | MAs '+data.m15.maStack+' | vs MAs '+data.m15.pVsMA+' | MACD '+(data.m15.macd.hist>0?'bull':'bear')+' | Candle '+data.m15.candle+'\n1H:  RSI '+data.h1.rsi+' | MAs '+data.h1.maStack+' | vs MAs '+data.h1.pVsMA+' | MACD '+(data.h1.macd.hist>0?'bull':'bear')+' | EMA200 '+(data.price>=data.h1.ema200?'above':'below')+'\n4H:  RSI '+data.h4.rsi+' | MAs '+data.h4.maStack+'\n\nProvide:\nVERDICT: LONG / SHORT / WAIT\nENTRY: [price]\nSTOP LOSS: [price]\nTARGET 1: [price] (~2R)\nTARGET 2: [price] (~4R)\nANALYSIS: 2-3 sentences.\nRISK NOTE: one sentence.';
+  }
+  if(mode==='active'){
+    var pair=document.getElementById('ctPair').value||'?';
+    var entry=document.getElementById('ctEntry').value||'?';
+    var sl=document.getElementById('ctSL').value||'?';
+    var tp=document.getElementById('ctTP').value||'?';
+    var liveStr=data?('Current: $'+data.price+'\n15m RSI '+data.m15.rsi+' | 1H RSI '+data.h1.rsi+' | 4H RSI '+data.h4.rsi+'\nMAs 15m/'+data.m15.maStack+' 1H/'+data.h1.maStack+' 4H/'+data.h4.maStack):'No live data.';
+    return ctx+'\n\nACTIVE TRADE: '+pair+' | Entry '+entry+' | SL '+sl+' | TP '+tp+'\n'+liveStr+'\n\nVERDICT: HOLD / CUT / PARTIAL EXIT\nP&L STATUS: in profit or drawdown, distance from SL/TP\nREASONING: 2-3 sentences.\nRECOMMENDATION: one clear action.';
+  }
+  if(mode==='top'){
+    if(!results.length)return ctx+'\n\nNo scan data yet. Run a scan first.';
+    var top5=results.slice(0,5).map(function(c){return c.sym+': '+c.score+'/10, '+c.bias+', RSI 15m/'+c.m15rsi+' 1H/'+c.h1rsi+' 4H/'+(c.h4rsi||'?')+', MAs 15m/'+c.m15maStack+' 1H/'+c.h1maStack+' 4H/'+c.h4maStack+', 24h '+(c.ch>=0?'+':'')+c.ch.toFixed(2)+'%';}).join('\n');
+    return ctx+'\n\nTOP 5 FROM SCAN:\n'+top5+'\n\n$'+margin+' margin | '+lev+'x | $'+notional+' notional\n\nPick the single best trade:\nBEST SETUP: [SYMBOL]\nDIRECTION: LONG / SHORT\nENTRY: [level]\nSTOP LOSS: [level]\nTARGET 1: [level]\nTARGET 2: [level]\nWHY THIS ONE: 2-3 sentences.';
+  }
+  if(mode==='exit'){
+    var pair2=document.getElementById('ctPair').value||'?';
+    var entry2=document.getElementById('ctEntry').value||'?';
+    var sl2=document.getElementById('ctSL').value||'?';
+    var tp2=document.getElementById('ctTP').value||'?';
+    var liveStr2=data?('Current: $'+data.price+'\n15m RSI '+data.m15.rsi+' MAs '+data.m15.maStack+' | 1H RSI '+data.h1.rsi+' MAs '+data.h1.maStack+' | 4H RSI '+data.h4.rsi+' MAs '+data.h4.maStack):'';
+    return ctx+'\n\nTRADE: '+pair2+' | Entry '+entry2+' | SL '+sl2+' | TP '+tp2+'\n'+liveStr2+'\n\nEXIT CALL: YES EXIT / NO HOLD / PARTIAL [%]\nREASON: 2 sentences.\nIF HOLDING: what would make you cut?\nIF EXITING: re-entry level?';
+  }
+  return ctx+'\nGive a general market read and what to watch for today.';
+}
+
+async function callClaude(prompt,attempt,statusEl){
+  attempt=attempt||1;
+  if(statusEl&&attempt>1)statusEl.innerHTML='<span style="color:#ffd700;font-size:10px;">RETRY '+attempt+'/5...</span>';
+  var ctrl=new AbortController();
+  var timeout=setTimeout(function(){ctrl.abort();},30000);
+  try{
+    var resp=await fetch('https://ai-proxy.dyllan1000.workers.dev/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]}),
+      signal:ctrl.signal
+    });
+    clearTimeout(timeout);
+    var data=await resp.json();
+    if(data.error){
+      var msg=(data.error.message||'').toLowerCase();
+      if((msg.includes('overload')||msg.includes('529'))&&attempt<=5){
+        await new Promise(function(r){setTimeout(r,3000);});
+        return callClaude(prompt,attempt+1,statusEl);
+      }
+      throw new Error(data.error.message);
+    }
+    return data.content.map(function(b){return b.text||'';}).join('');
+  }catch(e){
+    clearTimeout(timeout);
+    var isTimeout=e.name==='AbortError';
+    if((isTimeout||e.message.includes('fetch'))&&attempt<=5){
+      await new Promise(function(r){setTimeout(r,2000);});
+      return callClaude(prompt,attempt+1,statusEl);
+    }
+    throw isTimeout?new Error('Timed out — try again'):e;
+  }
+}
+
+function fmtAI(text){
+  var h=text.replace(/\*\*/g,'').replace(/\*/g,'').replace(/\n/g,'<br>');
+  h=h.replace(/(VERDICT:|EXIT CALL:|BEST SETUP:|DIRECTION:)\s*([^<]+)/gi,function(m,lbl,val){
+    var v=val.trim().toUpperCase();
+    var col='#c9d1d9';
+    if(v.indexOf('LONG')>=0||v.indexOf('HOLD')>=0||v.indexOf('NO HOLD')>=0)col='#00ff88';
+    else if(v.indexOf('SHORT')>=0||v.indexOf('CUT')>=0||v.indexOf('YES EXIT')>=0)col='#ff3355';
+    else if(v.indexOf('WAIT')>=0||v.indexOf('PARTIAL')>=0)col='#ffd700';
+    return '<span style="color:#4a5568;font-size:9px;letter-spacing:1px;">'+lbl+'</span> <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:16px;color:'+col+';">'+val+'</span>';
+  });
+  h=h.replace(/(ENTRY:|STOP LOSS:|TARGET 1:|TARGET 2:|ANALYSIS:|RISK NOTE:|REASONING:|RECOMMENDATION:|IF HOLDING:|IF EXITING:|WHY THIS ONE:|P&L STATUS:)/gi,'<br><span style="color:#ffd700;font-size:9px;letter-spacing:2px;">$1</span> ');
+  return '<div style="line-height:2;color:#c9d1d9;">'+h+'</div>';
+}
+
+async function runAIAnalysis(){
+  var btn=document.getElementById('aiBtn'),out=document.getElementById('aiOut');
+  var sym=document.getElementById('aiSymbol').value.trim();
+  var margin=parseFloat(document.getElementById('margin').value)||100;
+  var lev=parseFloat(document.getElementById('leverage').value)||25;
+  btn.disabled=true;btn.textContent='⟳ THINKING...';
+  out.className='ai-out loading';
+  out.innerHTML='<span style="color:#ffd700;opacity:0.7;font-size:10px;">FETCHING LIVE DATA...</span>';
+  if(!aiOpen)toggleAIPanel();
+  try{
+    var live=null;
+    if(sym&&(ctxMode==='entry'||ctxMode==='active'||ctxMode==='exit')){
+      live=await fetchLive(sym);
+      if(!live&&ctxMode==='entry'){
+        out.className='ai-out';
+        out.innerHTML='<span style="color:#ff3355;">Symbol not found — try e.g. BTCUSDT</span>';
+        btn.disabled=false;btn.textContent='⬡ ANALYSE';return;
+      }
+    } else if(ctxMode==='active'||ctxMode==='exit'){
+      var p=document.getElementById('ctPair').value.trim();
+      if(p)live=await fetchLive(p);
+    }
+    var response=await callClaude(buildPrompt(ctxMode,live,{margin:margin,lev:lev}),1,out);
+    out.className='ai-out';
+    out.style.cssText='background:#060a0e;border:1px solid #1e2d3d;border-left:3px solid rgba(255,215,0,0.5);border-radius:3px;padding:12px 14px;font-size:11px;line-height:1.85;color:#c9d1d9;position:relative;';
+    out.innerHTML=fmtAI(response);
+  }catch(e){
+    out.className='ai-out';
+    out.innerHTML='<span style="color:#ff3355;">'+( e.message||'Error')+'</span>';
+  }
+  btn.disabled=false;btn.textContent='⬡ ANALYSE';
+}
+
+async function quickAnalyse(sym,btnEl,resEl){
+  if(btnEl.classList.contains('loading'))return;
+  btnEl.classList.add('loading');btnEl.textContent='⟳ CALLING AI...';
+  resEl.style.display='none';
+  try{
+    var live=await fetchLive(sym);
+    var margin=parseFloat(document.getElementById('margin').value)||100;
+    var lev=parseFloat(document.getElementById('leverage').value)||25;
+    var response=await callClaude(buildPrompt('entry',live,{margin:margin,lev:lev}),1,btnEl);
+    resEl.style.cssText='display:block;background:#060a0e;color:#c9d1d9;padding:12px 14px;border-top:1px solid rgba(255,215,0,0.15);border-left:3px solid rgba(255,215,0,0.4);font-size:11px;line-height:1.9;';
+    resEl.innerHTML=fmtAI(response);
+  }catch(e){
+    resEl.style.cssText='display:block;background:#060a0e;padding:12px 14px;border-top:1px solid #1e2d3d;';
+    resEl.innerHTML='<span style="color:#ff3355;">'+e.message+'</span>';
+    resEl.style.display='block';
+  }
+  btnEl.classList.remove('loading');
+  btnEl.innerHTML='⬡ AI ANALYSE <span style="opacity:0.4;font-size:9px;">tap to refresh</span>';
+}
+// ── END AI ORACLE ───────────────────────────────────────────────────────────
 
 window.addEventListener('load',()=>startScan());
 </script>
