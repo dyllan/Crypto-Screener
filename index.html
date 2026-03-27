@@ -639,6 +639,8 @@ t2Dol:((Math.abs(t2-entry)/entry)*notional).toFixed(2),rr:(Math.abs(t1-entry)/ri
 function setProg(p){document.getElementById(‘prog’).style.width=p+’%’;}
 
 async function startScan(){
+var sub=document.getElementById(‘sub’);
+if(sub)sub.textContent=‘SCAN STARTING…’;
 if(scanning)return;scanning=true;
 document.getElementById(‘err’).style.display=‘none’;
 document.getElementById(‘list’).innerHTML=’<div class="empty">SCANNING…<br><span style="font-size:10px">15m + 1H + 4H · 50 coins</span></div>’;
@@ -767,7 +769,17 @@ function fallbackCopy(txt){
 const ta=document.createElement(‘textarea’);ta.value=txt;ta.style.cssText=‘position:fixed;opacity:0;’;
 document.body.appendChild(ta);ta.select();try{document.execCommand(‘copy’);}catch(e){}document.body.removeChild(ta);
 }
-window.addEventListener(‘load’,()=>startScan());
+window.addEventListener(‘load’,function(){
+var sub = document.getElementById(‘sub’);
+if(sub) sub.textContent = ‘LOAD EVENT FIRED’;
+try {
+startScan();
+} catch(e) {
+if(sub) sub.textContent = ‘STARTSCAN ERROR: ’ + e.message;
+var el = document.getElementById(‘list’);
+if(el) el.innerHTML = ‘<div style="padding:20px;color:#ff3355;font-size:12px;">’+e.message+’</div>’;
+}
+});
 </script>
 
 <div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:#0d1117;border:1px solid #00aaff;color:#00aaff;padding:10px 18px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 0 12px rgba(0,170,255,0.3);pointer-events:none;"></div>
