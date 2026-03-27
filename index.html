@@ -478,15 +478,29 @@ IF EXITING: re-entry level?`;
   return`${ctx}\nGive a general market read and what to watch for today.`;
 }
 
-async function callClaude(prompt){
-  const resp=await fetch('https://ai-proxy.dyllan1000.workers.dev/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
-  });
-  const data=await resp.json();
-  if(data.error)throw new Error(data.error.message);
-  return data.content.map(b=>b.text||'').join('');
+async function callClaude(prompt,attempt=1){
+  try{
+    const resp=await fetch('https://ai-proxy.dyllan1000.workers.dev/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await resp.json();
+    if(data.error){
+      if((data.error.message||'').toLowerCase().includes('overload')&&attempt<4){
+        await new Promise(r=>setTimeout(r,2000*attempt));
+        return callClaude(prompt,attempt+1);
+      }
+      throw new Error(data.error.message);
+    }
+    return data.content.map(b=>b.text||'').join('');
+  }catch(e){
+    if(attempt<4&&!(e.message||'').includes('not found')){
+      await new Promise(r=>setTimeout(r,2000*attempt));
+      return callClaude(prompt,attempt+1);
+    }
+    throw e;
+  }
 }
 
 async function runAIAnalysis(){
@@ -513,6 +527,9 @@ async function runAIAnalysis(){
     }
     const response=await callClaude(buildPrompt(ctxMode,live,{margin,lev}));
     out.className='ai-out';
+    out.style.background='#1a2a40';
+    out.style.color='#ffffff';
+    out.style.borderLeft='3px solid rgba(240,180,41,0.6)';
     out.innerHTML=fmtAI(response);
   }catch(e){
     out.className='ai-out';
@@ -526,15 +543,15 @@ function fmtAI(text){
     .replace(/\n/g,'<br>')
     .replace(/(VERDICT:|EXIT CALL:|BEST SETUP:|DIRECTION:)\s*([^\n<]+)/gi,(m,lbl,val)=>{
       const v=val.trim().toUpperCase();
-      let col='var(--text)';
-      if(v.includes('LONG')||v.includes('HOLD')||v.includes('NO HOLD'))col='var(--green)';
-      else if(v.includes('SHORT')||v.includes('CUT')||v.includes('YES EXIT'))col='var(--red)';
-      else if(v.includes('WAIT')||v.includes('PARTIAL'))col='var(--yellow)';
-      return`<span style="color:var(--mid);font-size:9px;letter-spacing:1px;">${lbl}</span> <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:${col};">${val}</span>`;
+      let col='#ffffff';
+      if(v.includes('LONG')||v.includes('HOLD')||v.includes('NO HOLD'))col='#00dd88';
+      else if(v.includes('SHORT')||v.includes('CUT')||v.includes('YES EXIT'))col='#ff3355';
+      else if(v.includes('WAIT')||v.includes('PARTIAL'))col='#ffd700';
+      return`<span style="color:#8aa8c0;font-size:9px;letter-spacing:1px;">${lbl}</span> <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:16px;color:${col};">${val}</span>`;
     })
     .replace(/(ENTRY:|STOP LOSS:|TARGET 1:|TARGET 2:|ANALYSIS:|RISK NOTE:|REASONING:|RECOMMENDATION:|IF HOLDING:|IF EXITING:|WHY THIS ONE:|P&L STATUS:)/gi,
-      '<br><span style="color:var(--gold);font-size:9px;letter-spacing:1px;">$1</span> ');
-  return`<div style="line-height:1.9;">${h}</div>`;
+      '<br><span style="color:#f0b429;font-size:9px;letter-spacing:2px;">$1</span> ');
+  return`<div style="line-height:2;color:#ffffff;">${h}</div>`;
 }
 
 async function quickAnalyse(sym,btnEl,resEl){
@@ -545,7 +562,7 @@ async function quickAnalyse(sym,btnEl,resEl){
     const margin=parseFloat(document.getElementById('margin').value)||100;
     const lev=parseFloat(document.getElementById('leverage').value)||25;
     const response=await callClaude(buildPrompt('entry',live,{margin,lev}));
-    resEl.innerHTML=fmtAI(response);resEl.style.display='block';
+    resEl.innerHTML=fmtAI(response);resEl.style.cssText='display:block;background:#1a2a40;color:#ffffff;padding:12px 14px;border-top:2px solid rgba(240,180,41,0.4);border-left:3px solid rgba(240,180,41,0.6);font-size:11px;line-height:1.9;';
   }catch(e){
     resEl.innerHTML=`<span style="color:var(--red);">⚠ ${e.message}</span>`;resEl.style.display='block';
   }
@@ -831,7 +848,7 @@ function render(){
         </div>
       </div>`:''}
       <button class="card-ai-btn" id="aibtn-${c.bin}" onclick="quickAnalyse('${c.bin}',document.getElementById('aibtn-${c.bin}'),document.getElementById('aired-${c.bin}'))">⬡ AI ANALYSE <span style="opacity:0.4;font-size:9px;">— deep read + levels</span></button>
-      <div class="card-ai-result" id="aired-${c.bin}" style="display:none;"></div>
+      <div class="card-ai-result" id="aired-${c.bin}" style="display:none;background:#1a2a40;color:#ffffff;padding:12px 14px;border-top:2px solid rgba(240,180,41,0.4);border-left:3px solid rgba(240,180,41,0.6);font-size:11px;line-height:1.9;"></div>
     </div>`;
   }).join('');
 }
