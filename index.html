@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -255,32 +254,45 @@
   <div class="empty">SCANNING MARKETS...<br><span style="font-size:10px">15m + 1H + 4H · 50 coins · ~45s</span></div>
 </div>
 <script>
+// Global error catcher
+window.onerror = function(msg, src, line, col, err) {
+  var el = document.getElementById('list');
+  if(el) el.innerHTML = '<div style="padding:20px;color:#ff3355;font-family:monospace;font-size:12px;line-height:1.8;">ERROR: ' + msg + '<br>Line: ' + line + '<br><br>Tap SCAN to retry</div>';
+  var sub = document.getElementById('sub');
+  if(sub) sub.textContent = 'ERROR — see below';
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  var el = document.getElementById('list');
+  if(el) el.innerHTML = '<div style="padding:20px;color:#ff3355;font-family:monospace;font-size:12px;line-height:1.8;">PROMISE ERROR: ' + (e.reason?.message || e.reason) + '<br><br>Tap SCAN to retry</div>';
+});
+
 const COINS=[
-  {sym:"BTC",name:"Bitcoin",bin:"BTCUSDT"},{sym:"ETH",name:"Ethereum",bin:"ETHUSDT"},
-  {sym:"XRP",name:"XRP",bin:"XRPUSDT"},{sym:"BNB",name:"BNB",bin:"BNBUSDT"},
-  {sym:"SOL",name:"Solana",bin:"SOLUSDT"},{sym:"DOGE",name:"Dogecoin",bin:"DOGEUSDT"},
-  {sym:"ADA",name:"Cardano",bin:"ADAUSDT"},{sym:"TRX",name:"TRON",bin:"TRXUSDT"},
-  {sym:"LINK",name:"Chainlink",bin:"LINKUSDT"},{sym:"AVAX",name:"Avalanche",bin:"AVAXUSDT"},
-  {sym:"TON",name:"TON",bin:"TONUSDT"},{sym:"XLM",name:"Stellar",bin:"XLMUSDT"},
-  {sym:"DOT",name:"Polkadot",bin:"DOTUSDT"},{sym:"HBAR",name:"Hedera",bin:"HBARUSDT"},
-  {sym:"UNI",name:"Uniswap",bin:"UNIUSDT"},{sym:"LTC",name:"Litecoin",bin:"LTCUSDT"},
-  {sym:"NEAR",name:"NEAR",bin:"NEARUSDT"},{sym:"APT",name:"Aptos",bin:"APTUSDT"},
-  {sym:"ARB",name:"Arbitrum",bin:"ARBUSDT"},{sym:"OP",name:"Optimism",bin:"OPUSDT"},
-  {sym:"INJ",name:"Injective",bin:"INJUSDT"},{sym:"ATOM",name:"Cosmos",bin:"ATOMUSDT"},
-  {sym:"FIL",name:"Filecoin",bin:"FILUSDT"},{sym:"ICP",name:"ICP",bin:"ICPUSDT"},
-  {sym:"VET",name:"VeChain",bin:"VETUSDT"},{sym:"ALGO",name:"Algorand",bin:"ALGOUSDT"},
-  {sym:"SAND",name:"Sandbox",bin:"SANDUSDT"},{sym:"MANA",name:"Decentraland",bin:"MANAUSDT"},
-  {sym:"AAVE",name:"Aave",bin:"AAVEUSDT"},{sym:"GRT",name:"The Graph",bin:"GRTUSDT"},
-  {sym:"FTM",name:"Fantom",bin:"FTMUSDT"},{sym:"EGLD",name:"MultiversX",bin:"EGLDUSDT"},
-  {sym:"THETA",name:"Theta",bin:"THETAUSDT"},{sym:"EOS",name:"EOS",bin:"EOSUSDT"},
-  {sym:"CAKE",name:"PancakeSwap",bin:"CAKEUSDT"},{sym:"SNX",name:"Synthetix",bin:"SNXUSDT"},
-  {sym:"COMP",name:"Compound",bin:"COMPUSDT"},{sym:"CRV",name:"Curve",bin:"CRVUSDT"},
-  {sym:"SUSHI",name:"SushiSwap",bin:"SUSHIUSDT"},{sym:"CHZ",name:"Chiliz",bin:"CHZUSDT"},
-  {sym:"ENJ",name:"Enjin",bin:"ENJUSDT"},{sym:"BAT",name:"BAT",bin:"BATUSDT"},
-  {sym:"ZIL",name:"Zilliqa",bin:"ZILUSDT"},{sym:"1INCH",name:"1inch",bin:"1INCHUSDT"},
-  {sym:"LRC",name:"Loopring",bin:"LRCUSDT"},{sym:"KNC",name:"Kyber",bin:"KNCUSDT"},
-  {sym:"DASH",name:"Dash",bin:"DASHUSDT"},{sym:"ZEC",name:"Zcash",bin:"ZECUSDT"},
-  {sym:"IOTA",name:"IOTA",bin:"IOTAUSDT"},{sym:"YFI",name:"Yearn",bin:"YFIUSDT"},
+{sym:“BTC”,name:“Bitcoin”,bin:“BTCUSDT”},{sym:“ETH”,name:“Ethereum”,bin:“ETHUSDT”},
+{sym:“XRP”,name:“XRP”,bin:“XRPUSDT”},{sym:“BNB”,name:“BNB”,bin:“BNBUSDT”},
+{sym:“SOL”,name:“Solana”,bin:“SOLUSDT”},{sym:“DOGE”,name:“Dogecoin”,bin:“DOGEUSDT”},
+{sym:“ADA”,name:“Cardano”,bin:“ADAUSDT”},{sym:“TRX”,name:“TRON”,bin:“TRXUSDT”},
+{sym:“LINK”,name:“Chainlink”,bin:“LINKUSDT”},{sym:“AVAX”,name:“Avalanche”,bin:“AVAXUSDT”},
+{sym:“TON”,name:“TON”,bin:“TONUSDT”},{sym:“XLM”,name:“Stellar”,bin:“XLMUSDT”},
+{sym:“DOT”,name:“Polkadot”,bin:“DOTUSDT”},{sym:“HBAR”,name:“Hedera”,bin:“HBARUSDT”},
+{sym:“UNI”,name:“Uniswap”,bin:“UNIUSDT”},{sym:“LTC”,name:“Litecoin”,bin:“LTCUSDT”},
+{sym:“NEAR”,name:“NEAR”,bin:“NEARUSDT”},{sym:“APT”,name:“Aptos”,bin:“APTUSDT”},
+{sym:“ARB”,name:“Arbitrum”,bin:“ARBUSDT”},{sym:“OP”,name:“Optimism”,bin:“OPUSDT”},
+{sym:“INJ”,name:“Injective”,bin:“INJUSDT”},{sym:“ATOM”,name:“Cosmos”,bin:“ATOMUSDT”},
+{sym:“FIL”,name:“Filecoin”,bin:“FILUSDT”},{sym:“ICP”,name:“ICP”,bin:“ICPUSDT”},
+{sym:“VET”,name:“VeChain”,bin:“VETUSDT”},{sym:“ALGO”,name:“Algorand”,bin:“ALGOUSDT”},
+{sym:“SAND”,name:“Sandbox”,bin:“SANDUSDT”},{sym:“MANA”,name:“Decentraland”,bin:“MANAUSDT”},
+{sym:“AAVE”,name:“Aave”,bin:“AAVEUSDT”},{sym:“GRT”,name:“The Graph”,bin:“GRTUSDT”},
+{sym:“FTM”,name:“Fantom”,bin:“FTMUSDT”},{sym:“EGLD”,name:“MultiversX”,bin:“EGLDUSDT”},
+{sym:“THETA”,name:“Theta”,bin:“THETAUSDT”},{sym:“EOS”,name:“EOS”,bin:“EOSUSDT”},
+{sym:“CAKE”,name:“PancakeSwap”,bin:“CAKEUSDT”},{sym:“SNX”,name:“Synthetix”,bin:“SNXUSDT”},
+{sym:“COMP”,name:“Compound”,bin:“COMPUSDT”},{sym:“CRV”,name:“Curve”,bin:“CRVUSDT”},
+{sym:“SUSHI”,name:“SushiSwap”,bin:“SUSHIUSDT”},{sym:“CHZ”,name:“Chiliz”,bin:“CHZUSDT”},
+{sym:“ENJ”,name:“Enjin”,bin:“ENJUSDT”},{sym:“BAT”,name:“BAT”,bin:“BATUSDT”},
+{sym:“ZIL”,name:“Zilliqa”,bin:“ZILUSDT”},{sym:“1INCH”,name:“1inch”,bin:“1INCHUSDT”},
+{sym:“LRC”,name:“Loopring”,bin:“LRCUSDT”},{sym:“KNC”,name:“Kyber”,bin:“KNCUSDT”},
+{sym:“DASH”,name:“Dash”,bin:“DASHUSDT”},{sym:“ZEC”,name:“Zcash”,bin:“ZECUSDT”},
+{sym:“IOTA”,name:“IOTA”,bin:“IOTAUSDT”},{sym:“YFI”,name:“Yearn”,bin:“YFIUSDT”},
 ];
 
 let results=[],filt=‘ALL’,sort=‘score’,autoOn=false,autoTimer=null,scanning=false;
