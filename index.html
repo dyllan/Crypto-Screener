@@ -426,7 +426,7 @@ const margin=parseFloat(document.getElementById(‘margin’).value)||100;
 const lev=parseFloat(document.getElementById(‘leverage’).value)||25;
 btn.disabled=true;btn.textContent=‘⟳ THINKING…’;
 out.className=‘ai-out loading’;
-out.innerHTML=’<span style="color:var(--orange);opacity:0.6;font-size:10px;">▸ FETCHING LIVE DATA…</span>’;
+out.innerHTML=’<span style="color:#ffd700;opacity:0.7;font-size:10px;">▸ FETCHING LIVE DATA…</span>’;
 if(!aiOpen)toggleAIPanel();
 try{
 let live=null;
@@ -443,6 +443,8 @@ if(p)live=await fetchLive(p);
 }
 const response=await callClaude(buildPrompt(ctxMode,live,{margin,lev}),1,out);
 out.className=‘ai-out’;
+out.style.background=’#060a0e’;
+out.style.color=’#c9d1d9’;
 out.innerHTML=fmtAI(response);
 }catch(e){
 out.className=‘ai-out’;
@@ -452,19 +454,19 @@ btn.disabled=false;btn.textContent=‘⬡ ANALYSE’;
 }
 
 function fmtAI(text){
-let h=text
+let h=text.replace(/**/g,””).replace(/*/g,””)
 .replace(/\n/g,’<br>’)
 .replace(/(VERDICT:|EXIT CALL:|BEST SETUP:|DIRECTION:)\s*([^\n<]+)/gi,(m,lbl,val)=>{
 const v=val.trim().toUpperCase();
-let col=‘var(–text)’;
-if(v.includes(‘LONG’)||v.includes(‘HOLD’)||v.includes(‘NO HOLD’))col=‘var(–green)’;
-else if(v.includes(‘SHORT’)||v.includes(‘CUT’)||v.includes(‘YES EXIT’))col=‘var(–red)’;
-else if(v.includes(‘WAIT’)||v.includes(‘PARTIAL’))col=‘var(–yellow)’;
-return`<span style="color:var(--mid);font-size:9px;letter-spacing:1px;">${lbl}</span> <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:${col};">${val}</span>`;
+let col=’#c9d1d9’;
+if(v.includes(‘LONG’)||v.includes(‘HOLD’)||v.includes(‘NO HOLD’))col=’#00ff88’;
+else if(v.includes(‘SHORT’)||v.includes(‘CUT’)||v.includes(‘YES EXIT’))col=’#ff3355’;
+else if(v.includes(‘WAIT’)||v.includes(‘PARTIAL’))col=’#ffd700’;
+return`<span style="color:#4a5568;font-size:9px;letter-spacing:1px;">${lbl}</span> <span style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:${col};">${val}</span>`;
 })
 .replace(/(ENTRY:|STOP LOSS:|TARGET 1:|TARGET 2:|ANALYSIS:|RISK NOTE:|REASONING:|RECOMMENDATION:|IF HOLDING:|IF EXITING:|WHY THIS ONE:|P&L STATUS:)/gi,
-’<br><span style="color:var(--orange);font-size:9px;letter-spacing:1px;opacity:0.7;">$1</span> ’);
-return`<div style="line-height:1.9;">${h}</div>`;
+’<br><span style="color:#ffd700;font-size:9px;letter-spacing:2px;">$1</span> ’);
+return`<div style="line-height:2;color:#c9d1d9;">${h}</div>`;
 }
 
 async function quickAnalyse(sym,btnEl,resEl){
@@ -629,6 +631,7 @@ document.getElementById(‘err’).style.display=‘none’;
 document.getElementById(‘list’).innerHTML=’<div class="empty">SCANNING…<br><span style="font-size:10px">15m + 1H + 4H · 50 coins</span></div>’;
 document.getElementById(‘scanBtn’).textContent=‘0%’;document.getElementById(‘scanBtn’).style.opacity=‘0.5’;
 setProg(3);
+await new Promise(r=>setTimeout(r,0));
 try{
 const tickRes=await safeFetch(‘https://api.binance.com/api/v3/ticker/24hr’);
 if(!tickRes.ok)throw new Error(‘Binance unavailable’);
@@ -682,7 +685,7 @@ document.getElementById(‘pctL’).textContent=`▲ ${Math.round(((l+rev)/t)*10
 document.getElementById(‘pctS’).textContent=`▼ ${Math.round((s/t)*100)}% BEAR`;
 }
 
-function sc(s){return s>=8?‘var(–green)’:s>=6?‘var(–yellow)’:s>=4?‘var(–text)’:‘var(–mid)’;}
+function sc(s){return s>=8?‘var(–green)’:s>=6?‘var(–yellow)’:s>=4?‘var(–text)’:‘var(–dim)’;}
 function rc(r){return r>=70?‘var(–red)’:r<=30?‘var(–green)’:r>=60?‘var(–yellow)’:r<=40?‘var(–blue)’:‘var(–text)’;}
 function dp(p){return p>=1000?1:p>=1?3:4;}
 function tfCls(s){return s===‘bull’?‘tfbull’:s===‘bear’?‘tfbear’:‘tfneut’;}
