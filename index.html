@@ -520,7 +520,7 @@ async function runAIAnalysis(){
 }
 
 function fmtAI(text){
-  let h=text.replace(/**/g,'')
+  let h=text.replace(/\*\*/g,'').replace(/\*/g,'')
     .replace(/\n/g,'<br>')
     .replace(/(VERDICT:|EXIT CALL:|BEST SETUP:|DIRECTION:)\s*([^\n<]+)/gi,(m,lbl,val)=>{
       const v=val.trim().toUpperCase();
