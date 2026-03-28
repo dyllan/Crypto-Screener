@@ -728,7 +728,7 @@ function render(){
           <span class="rrval" style="color:${parseFloat(ts.rr)>=2?'var(--green)':parseFloat(ts.rr)>=1.5?'var(--yellow)':'var(--red)'}">1 : ${ts.rr}</span>
         </div>
       </div>`:''}
-      <button class="card-ai-btn" id="aibtn-${c.bin}" onclick="quickAnalyse('${c.bin}',document.getElementById('aibtn-'+c.bin),document.getElementById('aired-'+c.bin))">⬡ AI ANALYSE <span style="opacity:0.4;font-size:9px;">— deep read + levels</span></button>
+      <button class="card-ai-btn" id="aibtn-${c.bin}" data-sym="${c.bin}" onclick="var s=this.getAttribute('data-sym');quickAnalyse(s,this,document.getElementById('aired-'+s))">⬡ AI ANALYSE <span style="opacity:0.4;font-size:9px;">— deep read + levels</span></button>
       <div id="aired-${c.bin}" style="display:none;"></div>
     </div>`;
   }).join('');
