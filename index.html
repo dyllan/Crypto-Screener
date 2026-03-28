@@ -705,7 +705,7 @@ function cardCls(c){
 }
 
 function render(){
-  let list=[...results];
+  let list=results.filter(function(c){return !c.lowLiq;});
   if(filt==='REV_LONG')list=list.filter(c=>c.bias==='REV_LONG');
   else if(filt==='REV_SHORT')list=list.filter(c=>c.bias==='REV_SHORT');
   else if(filt!=='ALL')list=list.filter(c=>c.bias===filt);
