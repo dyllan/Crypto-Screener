@@ -140,6 +140,50 @@
 .card-ai-btn{width:100%;padding:8px;background:rgba(255,215,0,0.03);border:none;border-top:1px solid rgba(255,215,0,0.12);color:rgba(255,215,0,0.75);font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background 0.15s;}
 .card-ai-btn:active{background:rgba(255,215,0,0.08);}
 .card-ai-btn.loading{color:var(–dim);cursor:not-allowed;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(–border);background:var(–panel);position:sticky;top:56px;z-index:99;}
+.tab{flex:1;padding:10px 6px;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:2px;text-align:center;cursor:pointer;color:var(–dim);border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab.on{color:var(–green);border-bottom-color:var(–green);}
+.tab-content{display:none;}
+.tab-content.on{display:block;}
+
+/* JOURNAL */
+.jnl{padding:10px 16px 80px;}
+.jnl-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.jnl-stat{padding:10px 12px;background:var(–panel);border:1px solid var(–border);border-radius:5px;}
+.jnl-stat-lbl{font-size:9px;color:var(–dim);letter-spacing:2px;margin-bottom:4px;}
+.jnl-stat-val{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:22px;}
+.jnl-combos{background:var(–panel);border:1px solid var(–border);border-radius:5px;margin-bottom:12px;overflow:hidden;}
+.jnl-combos-hdr{padding:10px 14px;font-size:9px;color:var(–dim);letter-spacing:3px;border-bottom:1px solid var(–border);}
+.jnl-combo{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(–border);}
+.jnl-combo:last-child{border-bottom:none;}
+.jnl-combo-sig{font-size:10px;color:var(–text);}
+.jnl-combo-rate{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:14px;}
+.jnl-empty{text-align:center;padding:40px 20px;color:var(–dim);font-size:11px;letter-spacing:2px;line-height:2;}
+.jnl-trades{display:flex;flex-direction:column;gap:8px;}
+.jnl-trade{background:var(–panel);border:1px solid var(–border);border-radius:5px;overflow:hidden;}
+.jnl-trade-top{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.jnl-trade-sym{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:16px;color:var(–blue);}
+.jnl-trade-date{font-size:9px;color:var(–dim);}
+.jnl-trade-sigs{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 8px;}
+.jnl-sig{font-size:9px;padding:2px 7px;border:1px solid var(–border);border-radius:2px;color:var(–dim);}
+.jnl-sig.bull{border-color:rgba(0,255,136,0.3);color:rgba(0,255,136,0.8);}
+.jnl-sig.bear{border-color:rgba(255,51,85,0.3);color:rgba(255,51,85,0.8);}
+.jnl-sig.gold{border-color:rgba(255,215,0,0.3);color:rgba(255,215,0,0.8);}
+.jnl-trade-actions{display:flex;border-top:1px solid var(–border);}
+.jnl-act{flex:1;padding:8px;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border:none;background:transparent;transition:background 0.15s;}
+.jnl-act.win{color:var(–green);border-right:1px solid var(–border);}
+.jnl-act.win:active{background:rgba(0,255,136,0.08);}
+.jnl-act.loss{color:var(–red);border-right:1px solid var(–border);}
+.jnl-act.loss:active{background:rgba(255,51,85,0.08);}
+.jnl-act.del{color:var(–dim);}
+.jnl-act.del:active{background:rgba(255,255,255,0.04);}
+.jnl-result{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:13px;padding:7px 12px;text-align:center;}
+.jnl-result.win{color:var(–green);background:rgba(0,255,136,0.06);border-top:1px solid rgba(0,255,136,0.2);}
+.jnl-result.loss{color:var(–red);background:rgba(255,51,85,0.06);border-top:1px solid rgba(255,51,85,0.2);}
+.jnl-log-btn{position:fixed;bottom:20px;right:16px;padding:10px 16px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.4);border-radius:4px;color:#ffd700;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;z-index:200;display:none;}
+.jnl-log-btn.show{display:block;}
 </style>
 
 </head>
@@ -156,6 +200,8 @@
   </div>
 </div>
 <div class="prog"><div class="progi" id="prog"></div></div>
+<div class="tabs"><div class="tab on" id="tab-scan" onclick="switchTab('scan')">⟳ SCANNER</div><div class="tab" id="tab-journal" onclick="switchTab('journal')">📓 JOURNAL</div></div>
+<div class="tab-content on" id="tc-scan">
 
 <div class="settings">
   <div class="setrow">
@@ -259,6 +305,13 @@
 <div class="list" id="list">
   <div class="empty">SCANNING MARKETS...<br><span style="font-size:10px">15m + 1H + 4H on 50 coins<br>~45 seconds</span></div>
 </div>
+
+</div><!-- end tc-scan -->
+<div class="tab-content" id="tc-journal">
+  <div class="jnl" id="jnlContent"><div class="jnl-empty">NO TRADES LOGGED YET<br><span style="font-size:10px">Tap LOG TRADE after an AI analysis</span></div></div>
+</div><!-- end tc-journal -->
+
+<button class="jnl-log-btn" id="jnlLogBtn" onclick="logCurrentTrade()">+ LOG TRADE</button>
 
 <script>
 const COINS=[
@@ -931,6 +984,17 @@ async function quickAnalyse(sym,btnEl,resEl){
     var response=await callClaude(buildPrompt('entry',live,{margin:margin,lev:lev}),1,btnEl);
     resEl.style.cssText='display:block;background:#060a0e;color:#c9d1d9;padding:12px 14px;border-top:1px solid rgba(255,215,0,0.15);border-left:3px solid rgba(255,215,0,0.4);font-size:11px;line-height:1.9;';
     resEl.innerHTML=fmtAI(response);
+    // Store for journal logging
+    var coinData = results.find(function(r){ return r.bin===sym; });
+    var allTFval = coinData&&coinData.m15maStack===coinData.h1maStack&&coinData.h1maStack===coinData.h4maStack?coinData.h1maStack:null;
+    lastAIResult = {
+      sym: sym, price: live?live.price:'?',
+      screenerBias: coinData?coinData.bias:'?', screenerScore: coinData?coinData.score:'?',
+      aiVerdict: extractAIVerdict(response), allTF: allTFval,
+      entry: live&&live.m15?live.m15.ma5.toFixed(4):'?',
+      sl:'see AI', tp:'see AI'
+    };
+    document.getElementById('jnlLogBtn').classList.add('show');
   }catch(e){
     resEl.style.cssText='display:block;background:#060a0e;padding:12px 14px;border-top:1px solid #1e2d3d;';
     resEl.innerHTML='<span style="color:#ff3355;">'+e.message+'</span>';
@@ -941,7 +1005,147 @@ async function quickAnalyse(sym,btnEl,resEl){
 }
 // ── END AI ORACLE ───────────────────────────────────────────────────────────
 
-window.addEventListener('load',()=>startScan());
+
+// ── JOURNAL ────────────────────────────────────────────────────────────────
+var jnlTrades = JSON.parse(localStorage.getItem('hrd_trades') || '[]');
+var lastAIResult = null; // stores last AI analysis for logging
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(function(el){ el.classList.remove('on'); });
+  document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.remove('on'); });
+  document.getElementById('tab-'+t).classList.add('on');
+  document.getElementById('tc-'+t).classList.add('on');
+  if(t==='journal') renderJournal();
+}
+
+function saveJnl() {
+  localStorage.setItem('hrd_trades', JSON.stringify(jnlTrades));
+}
+
+function logCurrentTrade() {
+  if(!lastAIResult) return;
+  var trade = {
+    id: Date.now(),
+    sym: lastAIResult.sym,
+    price: lastAIResult.price,
+    date: new Date().toLocaleDateString('en-AU'),
+    time: new Date().toLocaleTimeString('en-AU',{hour12:false}),
+    screenerBias: lastAIResult.screenerBias,
+    screenerScore: lastAIResult.screenerScore,
+    aiVerdict: lastAIResult.aiVerdict,
+    allTF: lastAIResult.allTF,
+    entry: lastAIResult.entry,
+    sl: lastAIResult.sl,
+    tp: lastAIResult.tp,
+    result: null
+  };
+  jnlTrades.unshift(trade);
+  saveJnl();
+  document.getElementById('jnlLogBtn').classList.remove('show');
+  lastAIResult = null;
+  switchTab('journal');
+}
+
+function setResult(id, result) {
+  var trade = jnlTrades.find(function(t){ return t.id===id; });
+  if(trade) { trade.result = result; saveJnl(); renderJournal(); }
+}
+
+function deleteTrade(id) {
+  jnlTrades = jnlTrades.filter(function(t){ return t.id!==id; });
+  saveJnl();
+  renderJournal();
+}
+
+function getSignatureKey(trade) {
+  var parts = [];
+  if(trade.allTF==='bull') parts.push('ALL BULL');
+  else if(trade.allTF==='bear') parts.push('ALL BEAR');
+  parts.push('Screener:'+trade.screenerBias);
+  parts.push('AI:'+trade.aiVerdict);
+  return parts.join(' + ');
+}
+
+function renderJournal() {
+  var el = document.getElementById('jnlContent');
+  var closed = jnlTrades.filter(function(t){ return t.result; });
+  var wins = closed.filter(function(t){ return t.result==='WIN'; }).length;
+  var winRate = closed.length ? Math.round((wins/closed.length)*100) : null;
+
+  // Combo stats
+  var combos = {};
+  closed.forEach(function(t) {
+    var key = getSignatureKey(t);
+    if(!combos[key]) combos[key] = {wins:0,total:0};
+    combos[key].total++;
+    if(t.result==='WIN') combos[key].wins++;
+  });
+  var comboList = Object.keys(combos).map(function(k){ return {sig:k, wins:combos[k].wins, total:combos[k].total, rate:Math.round((combos[k].wins/combos[k].total)*100)}; });
+  comboList.sort(function(a,b){ return b.rate-a.rate; });
+
+  var html = '';
+
+  // Stats row
+  html += '<div class="jnl-stats">';
+  html += '<div class="jnl-stat"><div class="jnl-stat-lbl">WIN RATE</div><div class="jnl-stat-val" style="color:'+(winRate===null?'var(--dim)':winRate>=50?'var(--green)':'var(--red')+')">'+( winRate===null?'—':winRate+'%')+'</div></div>';
+  html += '<div class="jnl-stat"><div class="jnl-stat-lbl">TRADES</div><div class="jnl-stat-val" style="color:var(--text)">'+closed.length+'/'+jnlTrades.length+'</div></div>';
+  html += '</div>';
+
+  // Combo breakdown
+  if(comboList.length) {
+    html += '<div class="jnl-combos"><div class="jnl-combos-hdr">▸ SIGNAL COMBINATIONS</div>';
+    comboList.forEach(function(c) {
+      var col = c.rate>=60?'var(--green)':c.rate>=40?'var(--yellow)':'var(--red)';
+      html += '<div class="jnl-combo"><div class="jnl-combo-sig">'+c.sig+'</div><div class="jnl-combo-rate" style="color:'+col+'">'+c.rate+'% <span style="font-size:10px;color:var(--dim)">('+c.wins+'/'+c.total+')</span></div></div>';
+    });
+    html += '</div>';
+  }
+
+  // Trade list
+  if(!jnlTrades.length) {
+    html += '<div class="jnl-empty">NO TRADES LOGGED YET<br><span style="font-size:10px">Tap LOG TRADE after an AI analysis</span></div>';
+  } else {
+    html += '<div class="jnl-trades">';
+    jnlTrades.forEach(function(t) {
+      var aiCol = t.aiVerdict==='LONG'?'bull':t.aiVerdict==='SHORT'?'bear':'gold';
+      var scrCol = t.screenerBias==='LONG'||t.screenerBias==='REV_LONG'?'bull':t.screenerBias==='SHORT'||t.screenerBias==='REV_SHORT'?'bear':'';
+      html += '<div class="jnl-trade">';
+      html += '<div class="jnl-trade-top"><div><div class="jnl-trade-sym">'+t.sym+'</div><div class="jnl-trade-date">'+t.date+' '+t.time+' · $'+t.price+'</div></div><div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:var(--yellow)">'+t.screenerScore+'/10</div></div>';
+      html += '<div class="jnl-trade-sigs">';
+      html += '<div class="jnl-sig '+aiCol+'">AI: '+t.aiVerdict+'</div>';
+      html += '<div class="jnl-sig '+scrCol+'">SCR: '+t.screenerBias+'</div>';
+      if(t.allTF) html += '<div class="jnl-sig '+(t.allTF==='bull'?'bull':'bear')+'">ALL '+(t.allTF==='bull'?'BULL':'BEAR')+'</div>';
+      if(t.entry) html += '<div class="jnl-sig gold">E:'+t.entry+' SL:'+t.sl+'</div>';
+      html += '</div>';
+      if(t.result) {
+        html += '<div class="jnl-result '+t.result.toLowerCase()+'">'+t.result+' ✓</div>';
+      } else {
+        html += '<div class="jnl-trade-actions">';
+        html += '<button class="jnl-act win" onclick="setResult('+t.id+',\'WIN\')">✓ WIN</button>';
+        html += '<button class="jnl-act loss" onclick="setResult('+t.id+',\'LOSS\')">✗ LOSS</button>';
+        html += '<button class="jnl-act del" onclick="deleteTrade('+t.id+')">DEL</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function extractAIVerdict(text) {
+  var match = text.match(/VERDICT[:\s]+([A-Z ]+)/i);
+  if(!match) return 'UNKNOWN';
+  var v = match[1].trim().toUpperCase();
+  if(v.indexOf('LONG')>=0) return 'LONG';
+  if(v.indexOf('SHORT')>=0) return 'SHORT';
+  if(v.indexOf('WAIT')>=0) return 'WAIT';
+  return v.split(' ')[0];
+}
+// ── END JOURNAL ─────────────────────────────────────────────────────────────
+
+window.addEventListener('load',function(){ startScan(); renderJournal(); });
 </script>
 
 <div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:#0d1117;border:1px solid #00aaff;color:#00aaff;padding:10px 18px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 0 12px rgba(0,170,255,0.3);pointer-events:none;"></div>
