@@ -1135,12 +1135,17 @@ function renderJournal() {
 }
 
 function extractAIVerdict(text) {
-  var match = text.match(/VERDICT[:\s]+([A-Z ]+)/i);
+  // Strip HTML tags first
+  var stripped = text.replace(/<[^>]+>/g, ' ');
+  // Look for VERDICT followed by the value
+  var match = stripped.match(/VERDICT[^A-Z]*([A-Z]+)/i);
   if(!match) return 'UNKNOWN';
   var v = match[1].trim().toUpperCase();
   if(v.indexOf('LONG')>=0) return 'LONG';
   if(v.indexOf('SHORT')>=0) return 'SHORT';
   if(v.indexOf('WAIT')>=0) return 'WAIT';
+  if(v.indexOf('HOLD')>=0) return 'HOLD';
+  if(v.indexOf('CUT')>=0) return 'CUT';
   return v.split(' ')[0];
 }
 // ── END JOURNAL ─────────────────────────────────────────────────────────────
