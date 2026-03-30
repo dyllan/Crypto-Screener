@@ -929,11 +929,17 @@ function buildPrompt(mode,data,cfg){
   }
   if(mode==='active'){
     var pair=document.getElementById('ctPair').value||'?';
-    var entry=document.getElementById('ctEntry').value||'?';
+    var entry=parseFloat(document.getElementById('ctEntry').value)||0;
     var sl=document.getElementById('ctSL').value||'?';
     var tp=document.getElementById('ctTP').value||'?';
-    var liveStr=data?('Current: $'+data.price+'\n15m RSI '+data.m15.rsi+' | 1H RSI '+data.h1.rsi+' | 4H RSI '+data.h4.rsi+'\nMAs 15m/'+data.m15.maStack+' 1H/'+data.h1.maStack+' 4H/'+data.h4.maStack):'No live data.';
-    return ctx+'\n\nACTIVE TRADE: '+pair+' | Entry '+entry+' | SL '+sl+' | TP '+tp+'\n'+liveStr+'\n\nVERDICT: HOLD / CUT / PARTIAL EXIT\nP&L STATUS: in profit or drawdown, distance from SL/TP\nREASONING: 2-3 sentences.\nRECOMMENDATION: one clear action.';
+    var entryStr=document.getElementById('ctEntry').value||'?';
+    // Calculate actual P&L: (currentPrice - entry) / entry * notional
+    var pnlUSD = data && entry ? ((data.price - entry) / entry * notional) : null;
+    var pnlStr = pnlUSD !== null ? (pnlUSD >= 0 ? '+' : '') + pnlUSD.toFixed(2) + ' USD (DO NOT recalculate this — use this exact figure)' : 'unknown';
+    var distSL = data && entry ? Math.abs(data.price - parseFloat(sl)).toFixed(4) : '?';
+    var distTP = data && entry ? Math.abs(parseFloat(tp) - data.price).toFixed(4) : '?';
+    var liveStr=data?('Current: $'+data.price+'\nUnrealized P&L: '+pnlStr+'\nDistance to SL: '+distSL+' | Distance to TP: '+distTP+'\n15m RSI '+data.m15.rsi+' | 1H RSI '+data.h1.rsi+' | 4H RSI '+data.h4.rsi+'\nMAs 15m/'+data.m15.maStack+' 1H/'+data.h1.maStack+' 4H/'+data.h4.maStack):'No live data.';
+    return ctx+'\n\nACTIVE TRADE: '+pair+' | Entry '+entryStr+' | SL '+sl+' | TP '+tp+'\n'+liveStr+'\n\nVERDICT: HOLD / CUT / PARTIAL EXIT\nP&L STATUS: use the exact USD figure provided above, state distance from SL and TP\nREASONING: 2-3 sentences.\nRECOMMENDATION: one clear action.';
   }
   if(mode==='top'){
     if(!results.length)return ctx+'\n\nNo scan data yet. Run a scan first.';
@@ -942,11 +948,14 @@ function buildPrompt(mode,data,cfg){
   }
   if(mode==='exit'){
     var pair2=document.getElementById('ctPair').value||'?';
-    var entry2=document.getElementById('ctEntry').value||'?';
+    var entry2=parseFloat(document.getElementById('ctEntry').value)||0;
+    var entry2Str=document.getElementById('ctEntry').value||'?';
     var sl2=document.getElementById('ctSL').value||'?';
     var tp2=document.getElementById('ctTP').value||'?';
-    var liveStr2=data?('Current: $'+data.price+'\n15m RSI '+data.m15.rsi+' MAs '+data.m15.maStack+' | 1H RSI '+data.h1.rsi+' MAs '+data.h1.maStack+' | 4H RSI '+data.h4.rsi+' MAs '+data.h4.maStack):'';
-    return ctx+'\n\nTRADE: '+pair2+' | Entry '+entry2+' | SL '+sl2+' | TP '+tp2+'\n'+liveStr2+'\n\nEXIT CALL: YES EXIT / NO HOLD / PARTIAL [%]\nREASON: 2 sentences.\nIF HOLDING: what would make you cut?\nIF EXITING: re-entry level?';
+    var pnlUSD2 = data && entry2 ? ((data.price - entry2) / entry2 * notional) : null;
+    var pnlStr2 = pnlUSD2 !== null ? (pnlUSD2 >= 0 ? '+' : '') + pnlUSD2.toFixed(2) + ' USD (DO NOT recalculate — use this exact figure)' : 'unknown';
+    var liveStr2=data?('Current: $'+data.price+'\nUnrealized P&L: '+pnlStr2+'\n15m RSI '+data.m15.rsi+' MAs '+data.m15.maStack+' | 1H RSI '+data.h1.rsi+' MAs '+data.h1.maStack+' | 4H RSI '+data.h4.rsi+' MAs '+data.h4.maStack):'';
+    return ctx+'\n\nTRADE: '+pair2+' | Entry '+entry2Str+' | SL '+sl2+' | TP '+tp2+'\n'+liveStr2+'\n\nEXIT CALL: YES EXIT / NO HOLD / PARTIAL [%]\nREASON: 2 sentences.\nIF HOLDING: what would make you cut?\nIF EXITING: re-entry level?';
   }
   return ctx+'\nGive a general market read and what to watch for today.';
 }
