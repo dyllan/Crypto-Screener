@@ -190,6 +190,21 @@
 .jnl-result.loss{color:var(–red);background:rgba(255,51,85,0.06);border-top:1px solid rgba(255,51,85,0.2);}
 .jnl-log-btn{position:fixed;bottom:20px;right:16px;padding:10px 16px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.4);border-radius:4px;color:#ffd700;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;z-index:200;display:none;}
 .jnl-log-btn.show{display:block;}
+.jnl-edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.jnl-edit-modal.open{display:flex;}
+.jnl-edit-box{background:#0d1117;border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:16px;width:100%;max-width:360px;}
+.jnl-edit-title{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:14px;color:#ffd700;letter-spacing:3px;margin-bottom:14px;}
+.jnl-edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.jnl-edit-grp{display:flex;flex-direction:column;gap:4px;}
+.jnl-edit-lbl{font-size:9px;color:var(–dim);letter-spacing:2px;}
+.jnl-edit-inp{background:#111820;border:1px solid var(–border);color:#ffffff;padding:7px 9px;font-family:‘Share Tech Mono’,monospace;font-size:12px;border-radius:3px;outline:none;width:100%;}
+.jnl-edit-inp:focus{border-color:#ffd700;}
+.jnl-edit-btns{display:flex;gap:8px;margin-top:12px;}
+.jnl-edit-save{flex:1;padding:9px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.4);color:var(–green);font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;border-radius:3px;cursor:pointer;}
+.jnl-edit-cancel{flex:1;padding:9px;background:transparent;border:1px solid var(–border);color:var(–dim);font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;border-radius:3px;cursor:pointer;}
+.jnl-pnl-total{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(–panel);border:1px solid var(–border);border-radius:5px;margin-bottom:12px;}
+.jnl-pnl-lbl{font-size:9px;color:var(–dim);letter-spacing:2px;}
+.jnl-pnl-val{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:20px;}
 </style>
 
 </head>
@@ -246,8 +261,13 @@
   </div>
   <div class="ai-body" id="aiBody">
     <div class="ai-trade-box">
-      <div class="ai-trade-lbl">▸ ACTIVE TRADE</div>
-      <div class="ai-trade-row">
+      <div class="ai-trade-lbl" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>▸ ACTIVE TRADE</span>
+        <select id="jnlTradeSelect" onchange="loadTradeFromJournal()" style="background:#111820;border:1px solid rgba(255,215,0,0.3);color:#ffd700;font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 6px;border-radius:3px;outline:none;max-width:160px;">
+          <option value="">— LOAD FROM JOURNAL —</option>
+        </select>
+      </div>
+      <div class="ai-trade-row" style="margin-top:8px;">
         <div class="ai-trade-item"><div class="ai-trade-item-lbl">PAIR</div><input id="ctPair" placeholder="TONUSDT" style="width:100px;"></div>
         <div class="ai-trade-item"><div class="ai-trade-item-lbl">ENTRY</div><input id="ctEntry" placeholder="1.2471"></div>
         <div class="ai-trade-item"><div class="ai-trade-item-lbl">STOP LOSS</div><input id="ctSL" placeholder="1.2408"></div>
@@ -1118,6 +1138,70 @@ function deleteTrade(id){
   saveJnl();renderJournal();
 }
 
+function openEditModal(id){
+  var trade=jnlTrades.find(function(t){return t.id===id;});
+  if(!trade)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('editSym').value=trade.sym||'';
+  document.getElementById('editEntry').value=trade.entry||'';
+  document.getElementById('editSL').value=trade.sl||'';
+  document.getElementById('editTP').value=trade.tp||'';
+  document.getElementById('editLev').value=trade.lev||'';
+  document.getElementById('editMargin').value=trade.margin||'';
+  document.getElementById('editPnl').value=trade.pnl||'';
+  document.getElementById('editResult').value=trade.result||'';
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').classList.remove('open');
+}
+
+function saveEditTrade(){
+  var id=parseInt(document.getElementById('editId').value);
+  var trade=jnlTrades.find(function(t){return t.id===id;});
+  if(!trade)return;
+  trade.sym=document.getElementById('editSym').value||trade.sym;
+  trade.entry=document.getElementById('editEntry').value;
+  trade.sl=document.getElementById('editSL').value;
+  trade.tp=document.getElementById('editTP').value;
+  trade.lev=document.getElementById('editLev').value;
+  trade.margin=document.getElementById('editMargin').value;
+  trade.pnl=document.getElementById('editPnl').value;
+  var res=document.getElementById('editResult').value;
+  trade.result=res||null;
+  saveJnl();
+  closeEditModal();
+  renderJournal();
+  populateJournalDropdown();
+}
+
+function loadTradeFromJournal(){
+  var sel=document.getElementById('jnlTradeSelect');
+  var id=parseInt(sel.value);
+  if(!id)return;
+  var trade=jnlTrades.find(function(t){return t.id===id;});
+  if(!trade)return;
+  document.getElementById('ctPair').value=trade.sym||'';
+  document.getElementById('ctEntry').value=trade.entry||'';
+  document.getElementById('ctSL').value=trade.sl||'';
+  document.getElementById('ctTP').value=trade.tp||'';
+  if(!document.getElementById('aiBody').classList.contains('open'))toggleAIPanel();
+}
+
+function populateJournalDropdown(){
+  var sel=document.getElementById('jnlTradeSelect');
+  if(!sel)return;
+  sel.innerHTML='<option value="">— LOAD FROM JOURNAL —</option>';
+  var open=jnlTrades.filter(function(t){return !t.result;});
+  open.forEach(function(t){
+    var opt=document.createElement('option');
+    opt.value=t.id;
+    opt.textContent=t.sym+' E:'+t.entry;
+    sel.appendChild(opt);
+  });
+}
+
 function getSignatureKey(trade){
   var parts=[];
   if(trade.allTF==='bull')parts.push('ALL BULL');
@@ -1132,6 +1216,9 @@ function renderJournal(){
   var closed=jnlTrades.filter(function(t){return t.result;});
   var wins=closed.filter(function(t){return t.result==='WIN';}).length;
   var winRate=closed.length?Math.round((wins/closed.length)*100):null;
+  // Total P&L
+  var totalPnl=0;
+  closed.forEach(function(t){if(t.pnl)totalPnl+=parseFloat(t.pnl)||0;});
   var combos={};
   closed.forEach(function(t){
     var key=getSignatureKey(t);
@@ -1146,6 +1233,10 @@ function renderJournal(){
   html+='<div class="jnl-stat"><div class="jnl-stat-lbl">WIN RATE</div><div class="jnl-stat-val" style="color:'+(winRate===null?'var(--dim)':winRate>=50?'var(--green)':'var(--red)')+'">'+( winRate===null?'—':winRate+'%')+'</div></div>';
   html+='<div class="jnl-stat"><div class="jnl-stat-lbl">TRADES</div><div class="jnl-stat-val" style="color:var(--text)">'+closed.length+'/'+jnlTrades.length+'</div></div>';
   html+='</div>';
+  if(closed.length){
+    var pnlCol=totalPnl>=0?'var(--green)':'var(--red)';
+    html+='<div class="jnl-pnl-total"><div class="jnl-pnl-lbl">TOTAL P&L (USD)</div><div class="jnl-pnl-val" style="color:'+pnlCol+'">'+(totalPnl>=0?'+':'')+totalPnl.toFixed(2)+'</div></div>';
+  }
   if(comboList.length){
     html+='<div class="jnl-combos"><div class="jnl-combos-hdr">▸ SIGNAL COMBINATIONS</div>';
     comboList.forEach(function(c){
@@ -1162,12 +1253,17 @@ function renderJournal(){
       var aiCol=t.aiVerdict==='LONG'?'bull':t.aiVerdict==='SHORT'?'bear':'gold';
       var scrCol=t.screenerBias==='LONG'||t.screenerBias==='REV_LONG'?'bull':t.screenerBias==='SHORT'||t.screenerBias==='REV_SHORT'?'bear':'';
       html+='<div class="jnl-trade">';
-      html+='<div class="jnl-trade-top"><div><div class="jnl-trade-sym">'+t.sym+'</div><div class="jnl-trade-date">'+t.date+' '+t.time+' · $'+t.price+'</div></div><div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:var(--yellow)">'+t.screenerScore+'/10</div></div>';
+      html+='<div class="jnl-trade-top"><div><div class="jnl-trade-sym">'+t.sym+'</div><div class="jnl-trade-date">'+t.date+' '+t.time+' · $'+t.price+'</div></div>';
+      html+='<div style="display:flex;align-items:center;gap:8px;">';
+      if(t.pnl){var pc=parseFloat(t.pnl);html+='<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:13px;color:'+(pc>=0?'var(--green)':'var(--red)')+'">'+(pc>=0?'+':'')+pc.toFixed(2)+'</div>';}
+      html+='<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:15px;color:var(--yellow)">'+t.screenerScore+'/10</div>';
+      html+='</div></div>';
       html+='<div class="jnl-trade-sigs">';
       html+='<div class="jnl-sig '+aiCol+'">AI: '+t.aiVerdict+'</div>';
       html+='<div class="jnl-sig '+scrCol+'">SCR: '+t.screenerBias+'</div>';
       if(t.allTF)html+='<div class="jnl-sig '+(t.allTF==='bull'?'bull':'bear')+'">ALL '+(t.allTF==='bull'?'BULL':'BEAR')+'</div>';
       if(t.entry)html+='<div class="jnl-sig gold">E:'+t.entry+' SL:'+t.sl+'</div>';
+      if(t.lev)html+='<div class="jnl-sig">'+t.lev+'x $'+t.margin+'</div>';
       html+='</div>';
       if(t.result){
         html+='<div class="jnl-result '+t.result.toLowerCase()+'">'+t.result+' ✓</div>';
@@ -1178,11 +1274,13 @@ function renderJournal(){
         html+='<button class="jnl-act del" onclick="deleteTrade('+t.id+')">DEL</button>';
         html+='</div>';
       }
+      html+='<button style="width:100%;padding:6px;background:transparent;border:none;border-top:1px solid var(--border);color:var(--dim);font-family:Share Tech Mono,monospace;font-size:9px;letter-spacing:1px;cursor:pointer;" onclick="openEditModal('+t.id+')">✎ EDIT</button>';
       html+='</div>';
     });
     html+='</div>';
   }
   el.innerHTML=html;
+  populateJournalDropdown();
 }
 
 function extractAIVerdict(text){
@@ -1214,8 +1312,43 @@ function loadSettings(){
   if(r)document.getElementById('riskpct').value=r;
   if(v)document.getElementById('minvol').value=v;
 }
-window.addEventListener('load',function(){loadSettings();startScan();renderJournal();});
+window.addEventListener('load',function(){loadSettings();startScan();renderJournal();populateJournalDropdown();});
 </script>
+
+<!-- EDIT TRADE MODAL -->
+
+<div class="jnl-edit-modal" id="editModal">
+  <div class="jnl-edit-box">
+    <div class="jnl-edit-title">✎ EDIT TRADE</div>
+    <input type="hidden" id="editId">
+    <div class="jnl-edit-row">
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">PAIR</div><input class="jnl-edit-inp" id="editSym" placeholder="BNBUSDT"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">ENTRY</div><input class="jnl-edit-inp" id="editEntry" placeholder="619.90"></div>
+    </div>
+    <div class="jnl-edit-row">
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">STOP LOSS</div><input class="jnl-edit-inp" id="editSL" placeholder="615.00"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">TAKE PROFIT</div><input class="jnl-edit-inp" id="editTP" placeholder="628.00"></div>
+    </div>
+    <div class="jnl-edit-row">
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">LEVERAGE</div><input class="jnl-edit-inp" id="editLev" placeholder="30"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">MARGIN (USD)</div><input class="jnl-edit-inp" id="editMargin" placeholder="194"></div>
+    </div>
+    <div class="jnl-edit-row">
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">P&L (USD)</div><input class="jnl-edit-inp" id="editPnl" placeholder="-20.50"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">RESULT</div>
+        <select class="jnl-edit-inp" id="editResult" style="cursor:pointer;">
+          <option value="">OPEN</option>
+          <option value="WIN">WIN</option>
+          <option value="LOSS">LOSS</option>
+        </select>
+      </div>
+    </div>
+    <div class="jnl-edit-btns">
+      <button class="jnl-edit-save" onclick="saveEditTrade()">✓ SAVE</button>
+      <button class="jnl-edit-cancel" onclick="closeEditModal()">✕ CANCEL</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:#0d1117;border:1px solid #00aaff;color:#00aaff;padding:10px 18px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 0 12px rgba(0,170,255,0.3);pointer-events:none;"></div>
 </body>
