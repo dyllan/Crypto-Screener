@@ -196,7 +196,7 @@
   </div>
   <div class="btns">
     <button class="btn bauto" id="autoBtn" onclick="toggleAuto()">○ AUTO</button>
-    <button class="btn bscan" id="scanBtn" onclick="startScan()">⟳ SCAN</button>
+    <button class="btn bscan" id="scanBtn" onclick="scanning?stopScan():startScan()">⟳ SCAN</button>
   </div>
 </div>
 <div class="prog"><div class="progi" id="prog"></div></div>
@@ -342,7 +342,7 @@ const COINS=[
   {sym:"IOTA",name:"IOTA",bin:"IOTAUSDT"},{sym:"YFI",name:"Yearn",bin:"YFIUSDT"},
 ];
 
-let results=[],filt='ALL',sort='score',autoOn=false,autoTimer=null,scanning=false;
+let results=[],filt='ALL',sort='score',autoOn=false,autoTimer=null,scanning=false,stopRequested=false;
 
 async function safeFetch(url,ms=8000){
   const ctrl=new AbortController();
@@ -570,6 +570,13 @@ function tradeSetup(coin){
 
 function setProg(p){document.getElementById('prog').style.width=p+'%';}
 
+function stopScan(){
+  stopRequested=true;
+  document.getElementById('scanBtn').textContent='⟳ SCAN';
+  document.getElementById('scanBtn').style.borderColor='';
+  document.getElementById('scanBtn').style.color='';
+}
+
 async function startScan(){
   if(scanning)return;
   scanning=true;
@@ -636,6 +643,7 @@ async function startScan(){
         ...s
       });
 
+      if(stopRequested){stopRequested=false;break;}
       if(processed.length%5===0){
         const partial=[...processed].sort((a,b)=>b.score-a.score);
         results=partial;
@@ -645,7 +653,7 @@ async function startScan(){
 
       const p=8+Math.round(((i+1)/COINS.length)*87);
       setProg(p);
-      document.getElementById('scanBtn').textContent=`${i+1}/${COINS.length}`;
+      document.getElementById('scanBtn').textContent='✕ STOP';document.getElementById('scanBtn').style.borderColor='var(--red)';document.getElementById('scanBtn').style.color='var(--red)';
     }
 
     processed.sort((a,b)=>b.score-a.score);
