@@ -343,34 +343,39 @@ function getAEST() {
 }
 
 function getSession(h) {
-  // NY/London overlap: 10pm-2am AEST (highest volume)
+  // NY open 10pm AEST. London/NY overlap: 10pm-2am AEST (peak volume)
   if (h >= 22 || h < 2) return {
     label: '🔥 NY / LONDON OVERLAP', sub: 'PEAK VOLUME — BEST WINDOW',
     dot: '#00ff88', color: '#00ff88', bg: 'rgba(0,20,10,0.8)'
   };
-  // NY session: 2am-5am AEST (NY winding down)
+  // NY winding down: 2am-5am AEST
   if (h >= 2 && h < 5) return {
-    label: '🇺🇸 NY SESSION', sub: 'WINDING DOWN',
+    label: '🇺🇸 NY SESSION', sub: 'WINDING DOWN — LIGHT VOLUME',
     dot: '#00aaff', color: '#00aaff', bg: 'rgba(0,10,20,0.8)'
   };
-  // Dead zone: 5am-8am AEST
-  if (h >= 5 && h < 8) return {
-    label: '💤 DEAD ZONE', sub: 'LOW LIQUIDITY — WAIT FOR SYDNEY',
+  // Dead zone: 5am-7am AEST (NY closing, Sydney not open yet)
+  if (h >= 5 && h < 7) return {
+    label: '💤 DEAD ZONE', sub: 'LOW LIQUIDITY — AVOID',
     dot: '#ff3355', color: '#ff3355', bg: 'rgba(20,0,5,0.8)'
   };
-  // Sydney open: 8am-9am AEST
-  if (h >= 8 && h < 9) return {
-    label: '🇦🇺 SYDNEY OPEN', sub: 'LIGHT VOLUME',
+  // Sydney open, pre-Tokyo: 7am-9am AEST
+  if (h >= 7 && h < 9) return {
+    label: '🇦🇺 SYDNEY SESSION', sub: 'LIGHT VOLUME — MARKET OPENING',
     dot: '#ffd700', color: '#ffd700', bg: 'rgba(20,15,0,0.8)'
   };
-  // Sydney/Tokyo overlap: 9am-5pm AEST
-  if (h >= 9 && h < 17) return {
-    label: '🌏 SYDNEY / TOKYO', sub: 'MODERATE VOLUME',
+  // Sydney/Tokyo overlap: 9am-4pm AEST
+  if (h >= 9 && h < 16) return {
+    label: '🌏 SYDNEY / TOKYO OVERLAP', sub: 'MODERATE VOLUME',
     dot: '#aa55ff', color: '#aa55ff', bg: 'rgba(15,0,20,0.8)'
+  };
+  // Tokyo/London crossover: 4pm-5pm AEST
+  if (h >= 16 && h < 17) return {
+    label: '🌏 TOKYO CLOSE / LONDON OPEN', sub: 'VOLUME TRANSITIONING',
+    dot: '#ffd700', color: '#ffd700', bg: 'rgba(20,15,0,0.8)'
   };
   // London session: 5pm-10pm AEST
   if (h >= 17 && h < 22) return {
-    label: '🇬🇧 LONDON SESSION', sub: 'VOLUME PICKING UP',
+    label: '🇬🇧 LONDON SESSION', sub: 'GOOD VOLUME — NY OPENS AT 10PM',
     dot: '#00aaff', color: '#00aaff', bg: 'rgba(0,10,20,0.8)'
   };
   return { label: '—', sub: '', dot: '#4a5568', color: '#4a5568', bg: 'var(--panel)' };
