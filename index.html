@@ -205,13 +205,13 @@
 
 <div class="settings">
   <div class="setrow">
-    <div class="setgrp"><div class="setlbl">MARGIN (USD)</div><input class="setinp" type="number" id="margin" value="50"></div>
-    <div class="setgrp"><div class="setlbl">LEVERAGE</div><input class="setinp" type="number" id="leverage" value="25"></div>
-    <div class="setgrp"><div class="setlbl">RISK %</div><input class="setinp" type="number" id="riskpct" value="20"></div>
+    <div class="setgrp"><div class="setlbl">MARGIN (USD)</div><input class="setinp" type="number" id="margin" value="50" onchange="saveSettings()"></div>
+    <div class="setgrp"><div class="setlbl">LEVERAGE</div><input class="setinp" type="number" id="leverage" value="25" onchange="saveSettings()"></div>
+    <div class="setgrp"><div class="setlbl">RISK %</div><input class="setinp" type="number" id="riskpct" value="20" onchange="saveSettings()"></div>
   </div>
   <div class="minvol">
     <span>MIN VOL $M:</span>
-    <input type="number" id="minvol" value="15">
+    <input type="number" id="minvol" value="15" onchange="saveSettings()">
     <span style="font-size:9px;color:var(--dim)">filters thin coins</span>
   </div>
 </div>
@@ -1015,7 +1015,7 @@ async function quickAnalyse(sym,btnEl,resEl){
 
 
 // ── JOURNAL ────────────────────────────────────────────────────────────────
-var jnlTrades = JSON.parse(localStorage.getItem('hrd_trades') || '[]');
+var jnlTrades = [];try{jnlTrades=JSON.parse(localStorage.getItem('hrd_trades')||'[]');if(!Array.isArray(jnlTrades))jnlTrades=[];}catch(e){jnlTrades=[];}
 var lastAIResult = null; // stores last AI analysis for logging
 
 function switchTab(t) {
@@ -1158,7 +1158,24 @@ function extractAIVerdict(text) {
 }
 // ── END JOURNAL ─────────────────────────────────────────────────────────────
 
-window.addEventListener('load',function(){ startScan(); renderJournal(); });
+
+function saveSettings(){
+  localStorage.setItem('hrd_margin', document.getElementById('margin').value);
+  localStorage.setItem('hrd_leverage', document.getElementById('leverage').value);
+  localStorage.setItem('hrd_riskpct', document.getElementById('riskpct').value);
+  localStorage.setItem('hrd_minvol', document.getElementById('minvol').value);
+}
+function loadSettings(){
+  var m=localStorage.getItem('hrd_margin');
+  var l=localStorage.getItem('hrd_leverage');
+  var r=localStorage.getItem('hrd_riskpct');
+  var v=localStorage.getItem('hrd_minvol');
+  if(m)document.getElementById('margin').value=m;
+  if(l)document.getElementById('leverage').value=l;
+  if(r)document.getElementById('riskpct').value=r;
+  if(v)document.getElementById('minvol').value=v;
+}
+window.addEventListener('load',function(){ loadSettings(); startScan(); renderJournal(); });
 </script>
 
 <div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:#0d1117;border:1px solid #00aaff;color:#00aaff;padding:10px 18px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 0 12px rgba(0,170,255,0.3);pointer-events:none;"></div>
