@@ -255,6 +255,8 @@ font-weight:600;font-size:11px;letter-spacing:0.5px;border:1px solid;
 .jnl-result.loss{color:var(–red);background:var(–red-bg);border-top:1px solid rgba(255,61,87,0.2);}
 .jnl-log-btn{position:fixed;bottom:24px;right:16px;padding:12px 20px;background:var(–yellow);border:none;border-radius:24px;color:#000;font-family:‘Inter’,sans-serif;font-weight:700;font-size:12px;cursor:pointer;z-index:200;display:none;box-shadow:0 4px 16px rgba(255,215,64,0.3);}
 .jnl-log-btn.show{display:block;}
+.jnl-add-btn{position:fixed;bottom:24px;left:16px;padding:12px 20px;background:var(–panel);border:1px solid rgba(41,182,246,0.4);border-radius:24px;color:var(–blue);font-family:‘Inter’,sans-serif;font-weight:600;font-size:12px;cursor:pointer;z-index:200;display:none;box-shadow:0 4px 16px rgba(41,182,246,0.15);}
+.jnl-add-btn.show{display:block;}
 .jnl-edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
 .jnl-edit-modal.open{display:flex;}
 .jnl-edit-box{background:#0d1117;border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:16px;width:100%;max-width:360px;}
@@ -498,10 +500,11 @@ text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15
 
 </div>
 <div class="tab-content" id="tc-journal">
-  <div class="jnl" id="jnlContent"><div class="jnl-empty">NO TRADES LOGGED YET<br><span style="font-size:10px">Tap LOG TRADE after an AI analysis</span></div></div>
+  <div class="jnl" id="jnlContent"><div class="jnl-empty">NO TRADES LOGGED YET<br><span style="font-size:13px;color:var(--dim)">Tap + Add Trade to log manually</span></div></div>
 </div>
 
 <button class="jnl-log-btn" id="jnlLogBtn" onclick="logCurrentTrade()">+ LOG TRADE</button>
+<button class="jnl-add-btn" id="jnlAddBtn" onclick="openAddModal()">+ Add Trade</button>
 
 <div class="tab-content" id="tc-chat">
   <div class="chat-wrap">
@@ -1313,6 +1316,7 @@ function deleteTrade(id){
 function openEditModal(id){
   var trade=jnlTrades.find(function(t){return t.id===id;});
   if(!trade)return;
+  document.getElementById('editModalTitle').textContent='EDIT TRADE';
   document.getElementById('editId').value=id;
   document.getElementById('editSym').value=trade.sym||'';
   document.getElementById('editEntry').value=trade.entry||'';
@@ -1325,23 +1329,67 @@ function openEditModal(id){
   document.getElementById('editModal').classList.add('open');
 }
 
+function openAddModal(){
+  document.getElementById('editModalTitle').textContent='ADD TRADE';
+  document.getElementById('editId').value='new';
+  document.getElementById('editSym').value='';
+  document.getElementById('editEntry').value='';
+  document.getElementById('editSL').value='';
+  document.getElementById('editTP').value='';
+  document.getElementById('editLev').value=document.getElementById('leverage').value||'30';
+  document.getElementById('editMargin').value=document.getElementById('margin').value||'200';
+  document.getElementById('editPnl').value='';
+  document.getElementById('editResult').value='';
+  document.getElementById('editModal').classList.add('open');
+  setTimeout(function(){document.getElementById('editSym').focus();},100);
+}
+
 function closeEditModal(){
   document.getElementById('editModal').classList.remove('open');
 }
 
 function saveEditTrade(){
-  var id=parseInt(document.getElementById('editId').value);
-  var trade=jnlTrades.find(function(t){return t.id===id;});
-  if(!trade)return;
-  trade.sym=document.getElementById('editSym').value||trade.sym;
-  trade.entry=document.getElementById('editEntry').value;
-  trade.sl=document.getElementById('editSL').value;
-  trade.tp=document.getElementById('editTP').value;
-  trade.lev=document.getElementById('editLev').value;
-  trade.margin=document.getElementById('editMargin').value;
-  trade.pnl=document.getElementById('editPnl').value;
-  var res=document.getElementById('editResult').value;
-  trade.result=res||null;
+  var idVal=document.getElementById('editId').value;
+  var sym=document.getElementById('editSym').value.toUpperCase().trim();
+  if(!sym){alert('Please enter a coin pair');return;}
+
+  if(idVal==='new'){
+    // Create new trade manually
+    var now=new Date();
+    var trade={
+      id:Date.now(),
+      sym:sym,
+      price:document.getElementById('editEntry').value||'',
+      date:now.toLocaleDateString('en-AU'),
+      time:now.toLocaleTimeString('en-AU',{hour12:false}),
+      screenerBias:'MANUAL',
+      screenerScore:'-',
+      aiVerdict:'MANUAL',
+      allTF:null,
+      entry:document.getElementById('editEntry').value,
+      sl:document.getElementById('editSL').value,
+      tp:document.getElementById('editTP').value,
+      lev:document.getElementById('editLev').value,
+      margin:document.getElementById('editMargin').value,
+      pnl:document.getElementById('editPnl').value||null,
+      result:document.getElementById('editResult').value||null
+    };
+    jnlTrades.unshift(trade);
+  } else {
+    var id=parseInt(idVal);
+    var trade=jnlTrades.find(function(t){return t.id===id;});
+    if(!trade)return;
+    trade.sym=sym||trade.sym;
+    trade.entry=document.getElementById('editEntry').value;
+    trade.sl=document.getElementById('editSL').value;
+    trade.tp=document.getElementById('editTP').value;
+    trade.lev=document.getElementById('editLev').value;
+    trade.margin=document.getElementById('editMargin').value;
+    trade.pnl=document.getElementById('editPnl').value;
+    var res=document.getElementById('editResult').value;
+    trade.result=res||null;
+  }
+
   saveJnl();
   closeEditModal();
   renderJournal();
@@ -1544,6 +1592,8 @@ function switchTab(t){
   document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('on');});
   document.getElementById('tab-'+t).classList.add('on');
   document.getElementById('tc-'+t).classList.add('on');
+  var addBtn = document.getElementById('jnlAddBtn');
+  if(addBtn) addBtn.classList.toggle('show', t==='journal');
   if(t==='journal')renderJournal();
   if(t==='chat'){
     var inp=document.getElementById('chatInput');
@@ -1675,7 +1725,7 @@ window.addEventListener('load',function(){loadSettings();startScan();renderJourn
 
 <div class="jnl-edit-modal" id="editModal">
   <div class="jnl-edit-box">
-    <div class="jnl-edit-title">✎ EDIT TRADE</div>
+    <div class="jnl-edit-title" id="editModalTitle">EDIT TRADE</div>
     <input type="hidden" id="editId">
     <div class="jnl-edit-row">
       <div class="jnl-edit-grp"><div class="jnl-edit-lbl">PAIR</div><input class="jnl-edit-inp" id="editSym" placeholder="BNBUSDT"></div>
