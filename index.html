@@ -646,7 +646,9 @@ function score(m15,h1,h4,ch,high24,low24,price){
 function tradeSetup(coin){
   const margin=parseFloat(document.getElementById('margin').value)||50;
   const lev=parseFloat(document.getElementById('leverage').value)||25;
+  const riskpct=parseFloat(document.getElementById('riskpct').value)||10;
   const notional=margin*lev;
+  const maxRiskDol=margin*(riskpct/100); // e.g. 10% of $200 = $20
   const price=coin.price;
   const bias=coin.bias;
   const atr=coin.h1atr||price*0.015;
@@ -658,11 +660,14 @@ function tradeSetup(coin){
   const t1=isL?entry+atr*2.5:entry-atr*2.5;
   const t2=isL?entry+atr*5:entry-atr*5;
   const risk=Math.abs(entry-sl);
+  // P&L based on notional (correct for leveraged futures)
   const rDol=(risk/entry)*notional;
   const t1Dol=(Math.abs(t1-entry)/entry)*notional;
   const t2Dol=(Math.abs(t2-entry)/entry)*notional;
   const rr=(Math.abs(t1-entry)/risk).toFixed(1);
-  return{entry:entry.toFixed(dec),sl:sl.toFixed(dec),t1:t1.toFixed(dec),t2:t2.toFixed(dec),rDol:rDol.toFixed(2),t1Dol:t1Dol.toFixed(2),t2Dol:t2Dol.toFixed(2),rr,margin,lev,notional:notional.toFixed(0)};
+  // Risk % of margin for display
+  const rPct=((rDol/margin)*100).toFixed(1);
+  return{entry:entry.toFixed(dec),sl:sl.toFixed(dec),t1:t1.toFixed(dec),t2:t2.toFixed(dec),rDol:rDol.toFixed(2),t1Dol:t1Dol.toFixed(2),t2Dol:t2Dol.toFixed(2),rPct,rr,margin,lev,notional:notional.toFixed(0),maxRiskDol:maxRiskDol.toFixed(2)};
 }
 
 function setProg(p){document.getElementById('prog').style.width=p+'%';}
@@ -859,7 +864,7 @@ function render(){
         +'<div class="tslbl">▸ TRADE SETUP — $'+ts.margin+'×'+ts.lev+' = $'+ts.notional+' NOTIONAL</div>'
         +'<div class="tsrow">'
         +'<div class="tsitem"><div class="tsitemlbl">ENTRY</div><div class="tsitemval" style="color:var(--yellow)">'+ts.entry+'</div></div>'
-        +'<div class="tsitem"><div class="tsitemlbl">STOP LOSS</div><div class="tsitemval" style="color:var(--red)">'+ts.sl+' <span style="font-size:10px">-$'+ts.rDol+'</span></div></div>'
+        +'<div class="tsitem"><div class="tsitemlbl">STOP LOSS</div><div class="tsitemval" style="color:var(--red)">'+ts.sl+' <span style="font-size:10px">-$'+ts.rDol+' ('+ts.rPct+'% margin)</span></div></div>'
         +'<div class="tsitem"><div class="tsitemlbl">TARGET 1</div><div class="tsitemval" style="color:var(--green)">'+ts.t1+' <span style="font-size:10px">+$'+ts.t1Dol+'</span></div></div>'
         +'<div class="tsitem"><div class="tsitemlbl">TARGET 2</div><div class="tsitemval" style="color:var(--blue)">'+ts.t2+' <span style="font-size:10px">+$'+ts.t2Dol+'</span></div></div>'
         +'</div>'
