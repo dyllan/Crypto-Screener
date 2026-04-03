@@ -22,7 +22,6 @@
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:60px;}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(41,182,246,0.03) 0%,transparent 70%);pointer-events:none;z-index:0;}
 
-/* HEADER */
 .hdr{
 padding:14px 18px 12px;border-bottom:1px solid var(–border);
 background:rgba(14,17,23,0.95);backdrop-filter:blur(12px);
@@ -44,7 +43,6 @@ background:var(–panel2);color:var(–dim);transition:all 0.15s;
 .prog{height:2px;background:var(–border);}
 .progi{height:100%;width:0%;background:linear-gradient(90deg,var(–blue),var(–green));box-shadow:0 0 8px rgba(41,182,246,0.6);transition:width 0.3s;}
 
-/* SESSION BANNER */
 .session-banner{padding:6px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(–border);background:var(–panel);transition:all 0.5s;}
 .sess-left{display:flex;align-items:center;gap:8px;}
 .sess-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
@@ -89,7 +87,6 @@ border-radius:var(–radius);text-align:center;transition:border-color 0.2s;
 .ss2{background:var(–red);border-radius:3px;transition:flex 0.5s;}
 .sentp{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;font-weight:500;}
 
-/* FILTERS */
 .filters{display:flex;gap:6px;flex-wrap:wrap;}
 .fb{
 padding:7px 13px;border-radius:20px;font-family:‘Inter’,sans-serif;font-weight:500;
@@ -104,7 +101,6 @@ background:var(–panel2);color:var(–dim);transition:all 0.15s;
 .frl{border-color:rgba(0,255,200,0.4);color:#00e5cc;background:rgba(0,255,200,0.06);}
 .frs{border-color:rgba(255,100,130,0.4);color:#ff80ab;background:rgba(255,100,130,0.06);}
 
-/* SORT */
 .sorts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .sortl{font-size:10px;color:var(–dim);font-weight:500;margin-right:2px;}
 .sb{
@@ -142,25 +138,21 @@ font-weight:600;font-size:11px;letter-spacing:0.5px;border:1px solid;
 .brl{color:#00e5cc;border-color:rgba(0,229,204,0.35);background:rgba(0,229,204,0.07);}
 .brs{color:#ff80ab;border-color:rgba(255,128,171,0.35);background:rgba(255,128,171,0.07);}
 
-/* CARD STATS ROW */
 .cstats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
 .csl{font-size:9px;color:var(–dim);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;}
 .csv{font-family:‘Rajdhani’,sans-serif;font-weight:600;font-size:15px;}
 
-/* TIMEFRAME TAGS */
 .tfrow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
 .tfb{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:500;border:1px solid var(–border2);letter-spacing:0.3px;}
 .tfbull{border-color:rgba(0,230,118,0.3);color:var(–green);background:var(–green-bg);}
 .tfbear{border-color:rgba(255,61,87,0.3);color:var(–red);background:var(–red-bg);}
 .tfneut{border-color:var(–border2);color:var(–dim);background:transparent;}
 
-/* INDICATOR ROW */
 .indrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
 .ind{padding:7px 8px;border-radius:var(–radius-sm);border:1px solid var(–border);text-align:center;background:var(–panel2);}
 .indl{font-size:9px;color:var(–dim);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;}
 .indv{font-family:‘Rajdhani’,sans-serif;font-weight:600;font-size:14px;}
 
-/* TRADE SETUP */
 .tradesetup{background:var(–panel2);border-top:1px solid var(–border);padding:14px 16px;}
 .tslbl{font-size:10px;color:var(–text2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;}
 .tsrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
@@ -171,14 +163,12 @@ font-weight:600;font-size:11px;letter-spacing:0.5px;border:1px solid;
 .rrlbl{font-size:10px;color:var(–text2);font-weight:500;}
 .rrval{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:17px;}
 
-/* SIGNAL TAGS */
 .tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
 .tag{font-size:10px;padding:3px 9px;background:var(–panel2);border:1px solid var(–border2);border-radius:20px;color:var(–dim);font-weight:500;}
 .tag.pos{border-color:rgba(0,230,118,0.3);color:rgba(0,230,118,0.8);background:var(–green-bg);}
 .tag.neg{border-color:rgba(255,61,87,0.3);color:rgba(255,61,87,0.8);background:var(–red-bg);}
 .tag.rev{border-color:rgba(179,157,219,0.3);color:var(–purple);background:rgba(179,157,219,0.06);}
 
-/* SCORE BAR */
 .btrack{height:3px;background:var(–border2);border-radius:2px;margin-top:4px;}
 .bfill{height:100%;border-radius:2px;}
 
@@ -272,85 +262,36 @@ font-weight:600;font-size:11px;letter-spacing:0.5px;border:1px solid;
 .jnl-pnl-total{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(–panel);border:1px solid var(–border);border-radius:5px;margin-bottom:12px;}
 .jnl-pnl-lbl{font-size:9px;color:var(–dim);letter-spacing:2px;}
 .jnl-pnl-val{font-family:‘Rajdhani’,sans-serif;font-weight:700;font-size:20px;}
-/* CHAT TAB - iMessage dark style */
 .chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 160px);background:#000;}
 .chat-msgs{flex:1;overflow-y:auto;padding:12px 16px 8px;display:flex;flex-direction:column;gap:4px;}
 .chat-msgs::-webkit-scrollbar{width:0;}
-/* Date/time dividers */
 .chat-date{text-align:center;font-family:-apple-system,sans-serif;font-size:11px;color:#8e8e93;margin:10px 0 6px;letter-spacing:0;}
-/* Bubbles */
 .chat-msg{max-width:78%;font-family:-apple-system,BlinkMacSystemFont,‘SF Pro Text’,sans-serif;font-size:14px;line-height:1.5;position:relative;word-wrap:break-word;}
-.chat-msg.user{
-align-self:flex-end;
-background:#0b84ff;
-color:#ffffff;
-padding:9px 14px;
-border-radius:18px 18px 4px 18px;
-margin-bottom:2px;
-}
+.chat-msg.user{align-self:flex-end;background:#0b84ff;color:#ffffff;padding:9px 14px;border-radius:18px 18px 4px 18px;margin-bottom:2px;}
 .chat-msg.user + .chat-msg.user{border-radius:18px 18px 4px 18px;margin-top:1px;}
-.chat-msg.ai{
-align-self:flex-start;
-background:#1c1c1e;
-color:#ffffff;
-padding:9px 14px;
-border-radius:18px 18px 18px 4px;
-margin-bottom:2px;
-}
+.chat-msg.ai{align-self:flex-start;background:#1c1c1e;color:#ffffff;padding:9px 14px;border-radius:18px 18px 18px 4px;margin-bottom:2px;}
 .chat-msg.ai + .chat-msg.ai{border-radius:18px 18px 18px 4px;margin-top:1px;}
 .chat-msg.ai.loading{opacity:0.5;}
-.chat-msg.ai .typing-dot{
-display:inline-block;width:6px;height:6px;border-radius:50%;background:#8e8e93;
-animation:typingpulse 1.2s infinite;margin:0 1px;
-}
+.chat-msg.ai .typing-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#8e8e93;animation:typingpulse 1.2s infinite;margin:0 1px;}
 .chat-msg.ai .typing-dot:nth-child(2){animation-delay:0.2s;}
 .chat-msg.ai .typing-dot:nth-child(3){animation-delay:0.4s;}
 @keyframes typingpulse{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
-/* Verdicts styled within bubble */
 .chat-msg.ai .verdict-long{color:#30d158;font-weight:600;}
 .chat-msg.ai .verdict-short{color:#ff453a;font-weight:600;}
 .chat-msg.ai .verdict-wait{color:#ffd60a;font-weight:600;}
-/* Input bar */
-.chat-input-row{
-display:flex;align-items:flex-end;gap:8px;
-padding:8px 12px 12px;
-background:#000;
-border-top:1px solid #1c1c1e;
-}
-.chat-input-wrap{
-flex:1;background:#1c1c1e;border-radius:20px;
-border:1px solid #3a3a3c;
-display:flex;align-items:center;padding:8px 14px;
-}
-.chat-input{
-flex:1;background:transparent;border:none;color:#ffffff;
-font-family:-apple-system,BlinkMacSystemFont,‘SF Pro Text’,sans-serif;
-font-size:15px;outline:none;resize:none;max-height:100px;
-}
+.chat-input-row{display:flex;align-items:flex-end;gap:8px;padding:8px 12px 12px;background:#000;border-top:1px solid #1c1c1e;}
+.chat-input-wrap{flex:1;background:#1c1c1e;border-radius:20px;border:1px solid #3a3a3c;display:flex;align-items:center;padding:8px 14px;}
+.chat-input{flex:1;background:transparent;border:none;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,‘SF Pro Text’,sans-serif;font-size:15px;outline:none;resize:none;max-height:100px;}
 .chat-input::placeholder{color:#636366;}
-.chat-send{
-width:32px;height:32px;border-radius:50%;
-background:#0b84ff;border:none;
-color:#fff;font-size:16px;cursor:pointer;
-display:flex;align-items:center;justify-content:center;
-flex-shrink:0;transition:background 0.15s;
-padding:0;line-height:1;
-}
+.chat-send{width:32px;height:32px;border-radius:50%;background:#0b84ff;border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;padding:0;line-height:1;}
 .chat-send:active{background:#0060cc;transform:scale(0.92);}
 .chat-send:disabled{background:#3a3a3c;cursor:not-allowed;}
-.chat-welcome{
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-height:100%;padding:40px 24px;text-align:center;gap:12px;
-}
+.chat-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 24px;text-align:center;gap:12px;}
 .chat-welcome-icon{font-size:40px;margin-bottom:4px;}
 .chat-welcome-title{font-family:-apple-system,sans-serif;font-size:17px;font-weight:600;color:#ffffff;}
 .chat-welcome-sub{font-family:-apple-system,sans-serif;font-size:13px;color:#8e8e93;line-height:1.6;}
 .chat-welcome-tips{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:8px;}
-.chat-tip{
-background:#1c1c1e;border-radius:10px;padding:10px 14px;
-font-family:-apple-system,sans-serif;font-size:12px;color:#ebebf5;
-text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15s;
-}
+.chat-tip{background:#1c1c1e;border-radius:10px;padding:10px 14px;font-family:-apple-system,sans-serif;font-size:12px;color:#ebebf5;text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15s;}
 .chat-tip:active{background:#2c2c2e;}
 .chat-tip-label{font-size:10px;color:#8e8e93;margin-bottom:2px;}
 </style>
@@ -369,8 +310,6 @@ text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15
   </div>
 </div>
 <div class="prog"><div class="progi" id="prog"></div></div>
-
-<!-- SESSION BANNER -->
 
 <div class="session-banner" id="sessBanner">
   <div class="sess-left">
@@ -392,7 +331,7 @@ text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15
     <div style="font-size:10px;color:var(--dim)">Per trade configuration</div>
   </div>
   <div class="setrow">
-    <div class="setgrp"><div class="setlbl">Margin (USD)</div><input class="setinp" type="number" id="margin" value="50" onchange="saveSettings()"></div>
+    <div class="setgrp"><div class="setlbl">Margin (USD)</div><input class="setinp" type="number" id="margin" value="150" onchange="saveSettings()"></div>
     <div class="setgrp"><div class="setlbl">Leverage</div><input class="setinp" type="number" id="leverage" value="25" onchange="saveSettings()"></div>
     <div class="setgrp"><div class="setlbl">Risk %</div><input class="setinp" type="number" id="riskpct" value="20" onchange="saveSettings()"></div>
   </div>
@@ -534,49 +473,20 @@ text-align:left;cursor:pointer;border:none;width:100%;transition:background 0.15
 <script>
 // ── SESSION BANNER ──────────────────────────────────────────────────────────
 function getAEST() {
-  // Brisbane UTC+10 no DST
   var now = new Date();
   var aest = new Date(now.getTime() + (now.getTimezoneOffset() + 600) * 60000);
   return aest;
 }
 
 function getSession(h) {
-  // NY open 10pm AEST. London/NY overlap: 10pm-2am AEST (peak volume)
-  if (h >= 22 || h < 2) return {
-    label: '🔥 NY / LONDON OVERLAP', sub: 'PEAK VOLUME - BEST WINDOW',
-    dot: '#00ff88', color: '#00ff88', bg: 'rgba(0,20,10,0.8)'
-  };
-  // NY winding down: 2am-5am AEST
-  if (h >= 2 && h < 5) return {
-    label: '🇺🇸 NY SESSION', sub: 'WINDING DOWN - LIGHT VOLUME',
-    dot: '#00aaff', color: '#00aaff', bg: 'rgba(0,10,20,0.8)'
-  };
-  // Dead zone: 5am-7am AEST (NY closing, Sydney not open yet)
-  if (h >= 5 && h < 7) return {
-    label: '💤 DEAD ZONE', sub: 'LOW LIQUIDITY - AVOID',
-    dot: '#ff3355', color: '#ff3355', bg: 'rgba(20,0,5,0.8)'
-  };
-  // Sydney open, pre-Tokyo: 7am-9am AEST
-  if (h >= 7 && h < 9) return {
-    label: '🇦🇺 SYDNEY SESSION', sub: 'LIGHT VOLUME - MARKET OPENING',
-    dot: '#ffd700', color: '#ffd700', bg: 'rgba(20,15,0,0.8)'
-  };
-  // Sydney/Tokyo overlap: 9am-4pm AEST
-  if (h >= 9 && h < 16) return {
-    label: '🌏 SYDNEY / TOKYO OVERLAP', sub: 'MODERATE VOLUME',
-    dot: '#aa55ff', color: '#aa55ff', bg: 'rgba(15,0,20,0.8)'
-  };
-  // Tokyo/London crossover: 4pm-5pm AEST
-  if (h >= 16 && h < 17) return {
-    label: '🌏 TOKYO CLOSE / LONDON OPEN', sub: 'VOLUME TRANSITIONING',
-    dot: '#ffd700', color: '#ffd700', bg: 'rgba(20,15,0,0.8)'
-  };
-  // London session: 5pm-10pm AEST
-  if (h >= 17 && h < 22) return {
-    label: '🇬🇧 LONDON SESSION', sub: 'GOOD VOLUME - NY OPENS AT 10PM',
-    dot: '#00aaff', color: '#00aaff', bg: 'rgba(0,10,20,0.8)'
-  };
-  return { label: '-', sub: '', dot: '#4a5568', color: '#4a5568', bg: 'var(--panel)' };
+  if (h >= 22 || h < 2) return {label:'🔥 NY / LONDON OVERLAP',sub:'PEAK VOLUME - BEST WINDOW',dot:'#00ff88',color:'#00ff88',bg:'rgba(0,20,10,0.8)'};
+  if (h >= 2 && h < 5) return {label:'🇺🇸 NY SESSION',sub:'WINDING DOWN - LIGHT VOLUME',dot:'#00aaff',color:'#00aaff',bg:'rgba(0,10,20,0.8)'};
+  if (h >= 5 && h < 7) return {label:'💤 DEAD ZONE',sub:'LOW LIQUIDITY - AVOID',dot:'#ff3355',color:'#ff3355',bg:'rgba(20,0,5,0.8)'};
+  if (h >= 7 && h < 9) return {label:'🇦🇺 SYDNEY SESSION',sub:'LIGHT VOLUME - MARKET OPENING',dot:'#ffd700',color:'#ffd700',bg:'rgba(20,15,0,0.8)'};
+  if (h >= 9 && h < 16) return {label:'🌏 SYDNEY / TOKYO OVERLAP',sub:'MODERATE VOLUME',dot:'#aa55ff',color:'#aa55ff',bg:'rgba(15,0,20,0.8)'};
+  if (h >= 16 && h < 17) return {label:'🌏 TOKYO CLOSE / LONDON OPEN',sub:'VOLUME TRANSITIONING',dot:'#ffd700',color:'#ffd700',bg:'rgba(20,15,0,0.8)'};
+  if (h >= 17 && h < 22) return {label:'🇬🇧 LONDON SESSION',sub:'GOOD VOLUME - NY OPENS AT 10PM',dot:'#00aaff',color:'#00aaff',bg:'rgba(0,10,20,0.8)'};
+  return {label:'-',sub:'',dot:'#4a5568',color:'#4a5568',bg:'var(--panel)'};
 }
 
 function updateSession() {
@@ -600,7 +510,6 @@ function updateSession() {
 }
 updateSession();
 setInterval(updateSession, 30000);
-// ── END SESSION BANNER ──────────────────────────────────────────────────────
 
 const COINS=[
   {sym:"BTC",name:"Bitcoin",bin:"BTCUSDT"},{sym:"ETH",name:"Ethereum",bin:"ETHUSDT"},
@@ -822,11 +731,11 @@ function score(m15,h1,h4,ch,high24,low24,price){
 }
 
 function tradeSetup(coin){
-  const margin=parseFloat(document.getElementById('margin').value)||50;
+  const margin=parseFloat(document.getElementById('margin').value)||150;
   const lev=parseFloat(document.getElementById('leverage').value)||25;
   const riskpct=parseFloat(document.getElementById('riskpct').value)||10;
   const notional=margin*lev;
-  const maxRiskDol=margin*(riskpct/100); // e.g. 10% of $200 = $20
+  const maxRiskDol=margin*(riskpct/100);
   const price=coin.price;
   const bias=coin.bias;
   const atr=coin.h1atr||price*0.015;
@@ -838,12 +747,10 @@ function tradeSetup(coin){
   const t1=isL?entry+atr*2.5:entry-atr*2.5;
   const t2=isL?entry+atr*5:entry-atr*5;
   const risk=Math.abs(entry-sl);
-  // P&L based on notional (correct for leveraged futures)
   const rDol=(risk/entry)*notional;
   const t1Dol=(Math.abs(t1-entry)/entry)*notional;
   const t2Dol=(Math.abs(t2-entry)/entry)*notional;
   const rr=(Math.abs(t1-entry)/risk).toFixed(1);
-  // Risk % of margin for display
   const rPct=((rDol/margin)*100).toFixed(1);
   return{entry:entry.toFixed(dec),sl:sl.toFixed(dec),t1:t1.toFixed(dec),t2:t2.toFixed(dec),rDol:rDol.toFixed(2),t1Dol:t1Dol.toFixed(2),t2Dol:t2Dol.toFixed(2),rPct,rr,margin,lev,notional:notional.toFixed(0),maxRiskDol:maxRiskDol.toFixed(2)};
 }
@@ -1131,7 +1038,7 @@ async function fetchLive(symbol){
 
 function buildPrompt(mode,data,cfg){
   const margin=cfg.margin,lev=cfg.lev,notional=margin*lev;
-  const ctx='You are analysing crypto futures trades for Dyllan, a Gold Coast Australia trader on Bitget. Setup: $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Uses MA5/MA10/MA20 + RSI across 15m/1H/4H. Account ~$616 AUD. Be direct and specific. No disclaimers. No filler.';
+  const ctx='You are analysing crypto futures trades for Dyllan, a Gold Coast Australia trader on Bitget. Account: ~$1100 USD. Setup: $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Uses MA5/MA10/MA20 + RSI across 15m/1H/4H. Be direct and specific. No disclaimers. No filler.';
   if(mode==='entry'&&data){
     return ctx+'\n\nLIVE DATA - '+data.sym+'\nPrice: $'+data.price+' | 24h: '+(data.ch>=0?'+':'')+data.ch.toFixed(2)+'% | High: '+data.high24+' | Low: '+data.low24+'\n15m: RSI '+data.m15.rsi+' | MAs '+data.m15.maStack+' | vs MAs '+data.m15.pVsMA+' | MACD '+(data.m15.macd.hist>0?'bull':'bear')+' | Candle '+data.m15.candle+'\n1H:  RSI '+data.h1.rsi+' | MAs '+data.h1.maStack+' | vs MAs '+data.h1.pVsMA+' | MACD '+(data.h1.macd.hist>0?'bull':'bear')+' | EMA200 '+(data.price>=data.h1.ema200?'above':'below')+'\n4H:  RSI '+data.h4.rsi+' | MAs '+data.h4.maStack+'\n\nProvide:\nVERDICT: LONG / SHORT / WAIT\nENTRY: [price]\nSTOP LOSS: [price]\nTARGET 1: [price] (~2R)\nTARGET 2: [price] (~4R)\nANALYSIS: 2-3 sentences.\nRISK NOTE: one sentence.';
   }
@@ -1141,7 +1048,6 @@ function buildPrompt(mode,data,cfg){
     var sl=document.getElementById('ctSL').value||'?';
     var tp=document.getElementById('ctTP').value||'?';
     var entryStr=document.getElementById('ctEntry').value||'?';
-    // Calculate actual P&L: (currentPrice - entry) / entry * notional
     var pnlUSD = data && entry ? ((data.price - entry) / entry * notional) : null;
     var pnlStr = pnlUSD !== null ? (pnlUSD >= 0 ? '+' : '') + pnlUSD.toFixed(2) + ' USD (DO NOT recalculate this - use this exact figure)' : 'unknown';
     var distSL = data && entry ? Math.abs(data.price - parseFloat(sl)).toFixed(4) : '?';
@@ -1219,7 +1125,7 @@ function fmtAI(text){
 async function runAIAnalysis(){
   var btn=document.getElementById('aiBtn'),out=document.getElementById('aiOut');
   var sym=document.getElementById('aiSymbol').value.trim();
-  var margin=parseFloat(document.getElementById('margin').value)||100;
+  var margin=parseFloat(document.getElementById('margin').value)||150;
   var lev=parseFloat(document.getElementById('leverage').value)||25;
   btn.disabled=true;btn.textContent='~ THINKING...';
   out.className='ai-out loading';
@@ -1255,7 +1161,7 @@ async function quickAnalyse(sym,btnEl,resEl){
   resEl.style.display='none';
   try{
     var live=await fetchLive(sym);
-    var margin=parseFloat(document.getElementById('margin').value)||100;
+    var margin=parseFloat(document.getElementById('margin').value)||150;
     var lev=parseFloat(document.getElementById('leverage').value)||25;
     var response=await callClaude(buildPrompt('entry',live,{margin:margin,lev:lev}),1,btnEl);
     resEl.style.cssText='display:block;background:#060a0e;color:#c9d1d9;padding:12px 14px;border-top:1px solid rgba(255,215,0,0.15);border-left:3px solid rgba(255,215,0,0.4);font-size:11px;line-height:1.9;';
@@ -1336,8 +1242,8 @@ function openAddModal(){
   document.getElementById('editEntry').value='';
   document.getElementById('editSL').value='';
   document.getElementById('editTP').value='';
-  document.getElementById('editLev').value=document.getElementById('leverage').value||'30';
-  document.getElementById('editMargin').value=document.getElementById('margin').value||'200';
+  document.getElementById('editLev').value=document.getElementById('leverage').value||'25';
+  document.getElementById('editMargin').value=document.getElementById('margin').value||'150';
   document.getElementById('editPnl').value='';
   document.getElementById('editResult').value='';
   document.getElementById('editModal').classList.add('open');
@@ -1352,20 +1258,14 @@ function saveEditTrade(){
   var idVal=document.getElementById('editId').value;
   var sym=document.getElementById('editSym').value.toUpperCase().trim();
   if(!sym){alert('Please enter a coin pair');return;}
-
   if(idVal==='new'){
-    // Create new trade manually
     var now=new Date();
     var trade={
-      id:Date.now(),
-      sym:sym,
+      id:Date.now(),sym:sym,
       price:document.getElementById('editEntry').value||'',
       date:now.toLocaleDateString('en-AU'),
       time:now.toLocaleTimeString('en-AU',{hour12:false}),
-      screenerBias:'MANUAL',
-      screenerScore:'-',
-      aiVerdict:'MANUAL',
-      allTF:null,
+      screenerBias:'MANUAL',screenerScore:'-',aiVerdict:'MANUAL',allTF:null,
       entry:document.getElementById('editEntry').value,
       sl:document.getElementById('editSL').value,
       tp:document.getElementById('editTP').value,
@@ -1389,7 +1289,6 @@ function saveEditTrade(){
     var res=document.getElementById('editResult').value;
     trade.result=res||null;
   }
-
   saveJnl();
   closeEditModal();
   renderJournal();
@@ -1436,7 +1335,6 @@ function renderJournal(){
   var closed=jnlTrades.filter(function(t){return t.result;});
   var wins=closed.filter(function(t){return t.result==='WIN';}).length;
   var winRate=closed.length?Math.round((wins/closed.length)*100):null;
-  // Total P&L
   var totalPnl=0;
   closed.forEach(function(t){if(t.pnl)totalPnl+=parseFloat(t.pnl)||0;});
   var combos={};
@@ -1520,21 +1418,14 @@ function extractAIVerdict(text){
 var chatHistory = [];
 
 function buildJournalContext() {
-  // Build a stats summary from journal trades to inject into chat
   if(!jnlTrades || !jnlTrades.length) return '';
-  
   var closed = jnlTrades.filter(function(t){ return t.result; });
   if(!closed.length) return 'Journal: ' + jnlTrades.length + ' trades logged, none closed yet.';
-
   var wins = closed.filter(function(t){ return t.result === 'WIN'; }).length;
   var losses = closed.length - wins;
   var winRate = Math.round((wins / closed.length) * 100);
-  
-  // Total P&L
   var totalPnl = 0;
   closed.forEach(function(t){ if(t.pnl) totalPnl += parseFloat(t.pnl)||0; });
-
-  // Win rate by coin
   var byCoin = {};
   closed.forEach(function(t){
     var sym = t.sym || 'unknown';
@@ -1545,8 +1436,6 @@ function buildJournalContext() {
   var coinStats = Object.keys(byCoin).map(function(k){
     return k + ': ' + Math.round((byCoin[k].wins/byCoin[k].total)*100) + '% (' + byCoin[k].wins + '/' + byCoin[k].total + ')';
   }).join(', ');
-
-  // Win rate by direction
   var byDir = {};
   closed.forEach(function(t){
     var dir = t.aiVerdict || t.screenerBias || 'unknown';
@@ -1557,8 +1446,6 @@ function buildJournalContext() {
   var dirStats = Object.keys(byDir).map(function(k){
     return k + ': ' + Math.round((byDir[k].wins/byDir[k].total)*100) + '%';
   }).join(', ');
-
-  // Signal combo win rates
   var bySig = {};
   closed.forEach(function(t){
     var key = (t.allTF ? 'ALL '+t.allTF.toUpperCase()+' + ' : '') + (t.screenerBias||'?') + ' + AI:' + (t.aiVerdict||'?');
@@ -1569,12 +1456,9 @@ function buildJournalContext() {
   var sigStats = Object.keys(bySig).filter(function(k){ return bySig[k].total >= 2; }).map(function(k){
     return '"' + k + '": ' + Math.round((bySig[k].wins/bySig[k].total)*100) + '% (' + bySig[k].wins + '/' + bySig[k].total + ')';
   }).join('; ');
-
-  // Recent trades (last 5)
   var recent = closed.slice(0, 5).map(function(t){
     return (t.sym||'?') + ' ' + (t.aiVerdict||t.screenerBias||'?') + ' ' + t.result + (t.pnl ? ' $'+(parseFloat(t.pnl)||0).toFixed(2) : '');
   }).join(', ');
-
   var ctx = 'TRADING JOURNAL STATS (' + closed.length + ' closed trades):';
   ctx += '\nOverall: ' + winRate + '% win rate (' + wins + 'W/' + losses + 'L)';
   if(totalPnl !== 0) ctx += ' | Total P&L: $' + totalPnl.toFixed(2);
@@ -1583,7 +1467,6 @@ function buildJournalContext() {
   if(sigStats) ctx += '\nBest signal combos: ' + sigStats;
   if(recent) ctx += '\nRecent trades: ' + recent;
   ctx += '\nUse this data to personalise your advice - warn about historically poor setups, highlight what works for him specifically.';
-  
   return ctx;
 }
 
@@ -1608,22 +1491,14 @@ function setChat(text) {
 
 function addChatMsg(role, text) {
   var msgs = document.getElementById('chatMsgs');
-  // Remove welcome screen if present
   var welcome = msgs.querySelector('.chat-welcome');
   if(welcome) welcome.remove();
-
   var div = document.createElement('div');
   div.className = 'chat-msg ' + role;
-
   if(role === 'ai' && text === '__typing__') {
     div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
   } else if(role === 'ai') {
-    // Clean up AI formatting for iMessage style - simpler, no borders
-    var clean = text
-      .replace(/\*\*/g, '')
-      .replace(/\*/g, '')
-      .replace(/\n/g, '<br>');
-    // Colour verdict words
+    var clean = text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/\n/g, '<br>');
     if(clean.indexOf('LONG')>=0||clean.indexOf('BUY')>=0) clean=clean.replace(/LONG/g,'<span class="verdict-long">LONG</span>').replace(/BUY/g,'<span class="verdict-long">BUY</span>');
     if(clean.indexOf('SHORT')>=0||clean.indexOf('CUT')>=0) clean=clean.replace(/SHORT/g,'<span class="verdict-short">SHORT</span>').replace(/CUT/g,'<span class="verdict-short">CUT</span>');
     if(clean.indexOf('WAIT')>=0||clean.indexOf('HOLD')>=0) clean=clean.replace(/WAIT/g,'<span class="verdict-wait">WAIT</span>').replace(/HOLD/g,'<span class="verdict-wait">HOLD</span>');
@@ -1631,7 +1506,6 @@ function addChatMsg(role, text) {
   } else {
     div.textContent = text;
   }
-
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return div;
@@ -1648,9 +1522,8 @@ async function sendChat() {
 
   addChatMsg('user', text);
 
-  // Detect coin mentions
-  var coinMatch = text.toUpperCase().match(/(BTC|ETH|XRP|BNB|SOL|DOGE|ADA|TRX|LINK|AVAX|TON|DOT|MATIC|LTC|NEAR|ARB|OP|INJ|ATOM|FIL|ICP|VET|ALGO|AAVE|GRT|FTM|EGLD|CAKE|SNX|COMP|CRV|SUSHI|CHZ|ENJ|BAT|ZIL|DASH|ZEC|IOTA|YFI|XLM|HBAR|UNI|APT|1INCH|LRC|KNC|SAND|MANA)/);
-  
+  var coinMatch = text.toUpperCase().match(/(BTC|ETH|XRP|BNB|SOL|DOGE|ADA|TRX|LINK|AVAX|TON|DOT|MATIC|LTC|NEAR|ARB|OP|INJ|ATOM|FIL|ICP|VET|ALGO|AAVE|GRT|FTM|EGLD|CAKE|SNX|COMP|CRV|SUSHI|CHZ|ENJ|BAT|ZIL|DASH|ZEC|IOTA|YFI|XLM|HBAR|UNI|APT|1INCH|LRC|KNC|SAND|MANA)/);
+
   var loadingDiv = addChatMsg('ai', '__typing__');
   loadingDiv.classList.add('loading');
 
@@ -1662,31 +1535,40 @@ async function sendChat() {
       liveData = await fetchLive(sym);
     }
 
-    var margin = parseFloat(document.getElementById('margin').value)||200;
-    var lev = parseFloat(document.getElementById('leverage').value)||30;
+    var margin = parseFloat(document.getElementById('margin').value)||150;
+    var lev = parseFloat(document.getElementById('leverage').value)||25;
     var notional = margin * lev;
 
-    // Build context
     var journalCtx = buildJournalContext();
-    var systemCtx = 'You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. He uses MA5/MA10/MA20 + RSI across 15m/1H/4H timeframes. $' + margin + ' margin, ' + lev + 'x leverage ($' + notional + ' notional). Sessions: Sydney 7am-4pm AEST, Tokyo 9am-6pm AEST, London 5pm-2am AEST, NY 10pm-7am AEST, NY/London overlap 10pm-2am AEST (peak volume). Be direct, specific, conversational. No disclaimers. No filler. Max 4-5 sentences unless detail is needed.' + (journalCtx ? '\n\n' + journalCtx : '');
+    // ── PATCH: updated account balance ──
+    var systemCtx = 'You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. Account: ~$1100 USD. He uses MA5/MA10/MA20 + RSI across 15m/1H/4H timeframes. $' + margin + ' margin, ' + lev + 'x leverage ($' + notional + ' notional). Sessions: Sydney 7am-4pm AEST, Tokyo 9am-6pm AEST, London 5pm-2am AEST, NY 10pm-7am AEST, NY/London overlap 10pm-2am AEST (peak volume). Be direct, specific, conversational. No disclaimers. No filler. Max 4-5 sentences unless detail is needed.' + (journalCtx ? '\n\n' + journalCtx : '');
 
     var userMsg = text;
     if(liveData) {
+      // Specific coin mentioned — inject that coin's live data
       userMsg += '\n\nLIVE DATA - ' + liveData.sym + ' @ $' + liveData.price + ' | 24h: ' + (liveData.ch>=0?'+':'') + liveData.ch.toFixed(2) + '%';
       userMsg += '\n15m: RSI ' + liveData.m15.rsi + ' | MAs ' + liveData.m15.maStack + ' | vs MAs ' + liveData.m15.pVsMA + ' | MACD ' + (liveData.m15.macd.hist>0?'bull':'bear') + ' | Candle ' + liveData.m15.candle;
       userMsg += '\n1H:  RSI ' + liveData.h1.rsi + ' | MAs ' + liveData.h1.maStack + ' | vs MAs ' + liveData.h1.pVsMA + ' | MACD ' + (liveData.h1.macd.hist>0?'bull':'bear') + ' | EMA200 ' + (liveData.price>=liveData.h1.ema200?'above':'below');
       userMsg += '\n4H:  RSI ' + liveData.h4.rsi + ' | MAs ' + liveData.h4.maStack;
-    } else if(results.length && (text.toLowerCase().includes('best') || text.toLowerCase().includes('top') || text.toLowerCase().includes('scan'))) {
-      var top3 = results.slice(0,3).map(function(c){return c.sym+': '+c.score+'/10 '+c.bias+' RSI1H:'+c.h1rsi;}).join(', ');
-      userMsg += '\n\nCurrent scan top 3: ' + top3;
+    } else {
+      // ── PATCH: auto-fetch live BTC + ETH for any general query ──
+      try {
+        var btcData = await fetchLive('BTCUSDT');
+        var ethData = await fetchLive('ETHUSDT');
+        if(btcData) userMsg += '\n\nLIVE BTC @ $' + btcData.price.toFixed(0) + ' | 24h: ' + (btcData.ch>=0?'+':'') + btcData.ch.toFixed(2) + '% | 1H RSI ' + btcData.h1.rsi + ' | MAs ' + btcData.h1.maStack + ' | EMA200 ' + (btcData.price>=btcData.h1.ema200?'above':'below');
+        if(ethData) userMsg += '\nLIVE ETH @ $' + ethData.price.toFixed(0) + ' | 24h: ' + (ethData.ch>=0?'+':'') + ethData.ch.toFixed(2) + '% | 1H RSI ' + ethData.h1.rsi + ' | MAs ' + ethData.h1.maStack + ' | EMA200 ' + (ethData.price>=ethData.h1.ema200?'above':'below');
+      } catch(e) {}
+      if(results.length && (text.toLowerCase().includes('best') || text.toLowerCase().includes('top') || text.toLowerCase().includes('scan'))) {
+        var top3 = results.slice(0,3).map(function(c){return c.sym+': '+c.score+'/10 '+c.bias+' RSI1H:'+c.h1rsi;}).join(', ');
+        userMsg += '\n\nCurrent scan top 3: ' + top3;
+      }
     }
 
-    // Add to history
     chatHistory.push({role:'user', content: systemCtx + '\n\n' + userMsg});
     if(chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
 
     var response = await callClaude(systemCtx + '\n' + userMsg, 1, null);
-    
+
     loadingDiv.classList.remove('loading');
     loadingDiv.innerHTML = fmtAI(response);
     chatHistory.push({role:'assistant', content: response});
@@ -1697,10 +1579,9 @@ async function sendChat() {
   }
 
   btn.disabled = false;
-  btn.textContent = 'SEND';
+  btn.textContent = '↑';
   document.getElementById('chatInput').focus();
 }
-// ── END CHAT ─────────────────────────────────────────────────────────────────
 
 function saveSettings(){
   localStorage.setItem('hrd_margin',document.getElementById('margin').value);
@@ -1736,8 +1617,8 @@ window.addEventListener('load',function(){loadSettings();startScan();renderJourn
       <div class="jnl-edit-grp"><div class="jnl-edit-lbl">TAKE PROFIT</div><input class="jnl-edit-inp" id="editTP" placeholder="628.00"></div>
     </div>
     <div class="jnl-edit-row">
-      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">LEVERAGE</div><input class="jnl-edit-inp" id="editLev" placeholder="30"></div>
-      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">MARGIN (USD)</div><input class="jnl-edit-inp" id="editMargin" placeholder="194"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">LEVERAGE</div><input class="jnl-edit-inp" id="editLev" placeholder="25"></div>
+      <div class="jnl-edit-grp"><div class="jnl-edit-lbl">MARGIN (USD)</div><input class="jnl-edit-inp" id="editMargin" placeholder="150"></div>
     </div>
     <div class="jnl-edit-row">
       <div class="jnl-edit-grp"><div class="jnl-edit-lbl">P&L (USD)</div><input class="jnl-edit-inp" id="editPnl" placeholder="-20.50"></div>
