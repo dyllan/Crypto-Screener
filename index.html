@@ -971,7 +971,7 @@ function extractAIVerdict(text){
 
 // ── CHAT WITH PERSISTENT MEMORY + IMAGE UPLOAD ─────────────────────────────
 var CHAT_HISTORY_KEY = 'hrd_chat_history';
-var CHAT_HISTORY_MAX = 100; // max messages to persist
+var CHAT_HISTORY_MAX = 20; // max messages to persist and send
 
 var chatHistory = [];
 var chatMessageCount = 0;
@@ -1179,11 +1179,6 @@ async function sendChat(){
       userMsgText+='\n1H:  RSI '+liveData.h1.rsi+' | MAs '+liveData.h1.maStack+' | EMA200 '+(liveData.price>=liveData.h1.ema200?'above':'below');
       userMsgText+='\n4H:  RSI '+liveData.h4.rsi+' | MAs '+liveData.h4.maStack;
     }else if(!pendingImages.length){
-      try{
-        var btcData=await fetchLive('BTCUSDT');var ethData=await fetchLive('ETHUSDT');
-        if(btcData)userMsgText+='\n\nLIVE BTC @ $'+btcData.price.toFixed(0)+' | 24h: '+(btcData.ch>=0?'+':'')+btcData.ch.toFixed(2)+'% | 1H RSI '+btcData.h1.rsi+' | MAs '+btcData.h1.maStack;
-        if(ethData)userMsgText+='\nLIVE ETH @ $'+ethData.price.toFixed(0)+' | 24h: '+(ethData.ch>=0?'+':'')+ethData.ch.toFixed(2)+'% | 1H RSI '+ethData.h1.rsi+' | MAs '+ethData.h1.maStack;
-      }catch(e){}
       if(results.length&&((text||'').toLowerCase().includes('best')||(text||'').toLowerCase().includes('top')||(text||'').toLowerCase().includes('scan'))){
         var top3=results.slice(0,3).map(function(c){return c.sym+': '+c.score+'/10 '+c.bias+' RSI1H:'+c.h1rsi;}).join(', ');
         userMsgText+='\n\nCurrent scan top 3: '+top3;
