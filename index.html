@@ -807,8 +807,152 @@ async function fetchLive(symbol){
     ]);
     var t=results2[0],k15=results2[1],k1h=results2[2],k4h=results2[3];
     var price=parseFloat(t.lastPrice);
-    return{price:price,ch:parseFloat(t.priceChangePercent),high24:parseFloat(t.highPrice),low24:parseFloat(t.lowPrice),m15:analyse(k15,price),h1:analyse(k1h,price),h4:analyse(k4h,price),sym:sym};
+    var ta=buildFullTA(k15,k1h,k4h,price,parseFloat(t.highPrice),parseFloat(t.lowPrice));
+    return{price:price,ch:parseFloat(t.priceChangePercent),high24:parseFloat(t.highPrice),low24:parseFloat(t.lowPrice),vol24:parseFloat(t.quoteVolume)/1000000,m15:analyse(k15,price),h1:analyse(k1h,price),h4:analyse(k4h,price),sym:sym,ta:ta};
   }catch(e){return null;}
+}
+
+function calcFib(high,low){
+  var diff=high-low;
+  var dec=high>=100?2:high>=1?4:5;
+  return{
+    p236:(high-diff*0.236).toFixed(dec),
+    p382:(high-diff*0.382).toFixed(dec),
+    p500:(high-diff*0.500).toFixed(dec),
+    p618:(high-diff*0.618).toFixed(dec),
+    p786:(high-diff*0.786).toFixed(dec),
+    high:high.toFixed(dec),
+    low:low.toFixed(dec)
+  };
+}
+
+function calcSupportResistance(klines,price){
+  if(!klines||klines.length<10)return{support:[],resistance:[]};
+  var dec=price>=100?2:price>=1?4:5;
+  var highs=[],lows=[];
+  for(var i=2;i<klines.length-2;i++){
+    var h=parseFloat(klines[i][2]),l=parseFloat(klines[i][3]);
+    var ph=Math.max(parseFloat(klines[i-1][2]),parseFloat(klines[i-2][2]));
+    var pl=Math.min(parseFloat(klines[i-1][3]),parseFloat(klines[i-2][3]));
+    var nh=Math.max(parseFloat(klines[i+1][2]),parseFloat(klines[i+2][2]));
+    var nl=Math.min(parseFloat(klines[i+1][3]),parseFloat(klines[i+2][3]));
+    if(h>ph&&h>nh)highs.push(h);
+    if(l<pl&&l<nl)lows.push(l);
+  }
+  // Cluster nearby levels
+  function cluster(levels,threshold){
+    levels.sort(function(a,b){return a-b;});
+    var clusters=[];
+    levels.forEach(function(l){
+      var found=false;
+      for(var i=0;i<clusters.length;i++){
+        if(Math.abs(clusters[i]-l)/l<threshold){clusters[i]=(clusters[i]+l)/2;found=true;break;}
+      }
+      if(!found)clusters.push(l);
+    });
+    return clusters;
+  }
+  var allR=cluster(highs,0.003).filter(function(l){return l>price;}).sort(function(a,b){return a-b;}).slice(0,3);
+  var allS=cluster(lows,0.003).filter(function(l){return l<price;}).sort(function(a,b){return b-a;}).slice(0,3);
+  return{
+    resistance:allR.map(function(l){return l.toFixed(dec);}),
+    support:allS.map(function(l){return l.toFixed(dec);})
+  };
+}
+
+function calcVolumeProfile(klines){
+  if(!klines||klines.length<5)return{trend:'unknown',spike:false,avgVol:0,curVol:0,ratio:1};
+  var vols=klines.map(function(k){return parseFloat(k[5]);});
+  var avg=vols.slice(-20).reduce(function(a,b){return a+b;},0)/Math.min(20,vols.length);
+  var cur=vols[vols.length-1];
+  var ratio=avg>0?cur/avg:1;
+  // Volume trend over last 5 candles
+  var recent=vols.slice(-5);
+  var volTrend=recent[4]>recent[0]?'increasing':'decreasing';
+  return{trend:volTrend,spike:ratio>2,ratio:parseFloat(ratio.toFixed(2)),avgVol:parseFloat(avg.toFixed(0)),curVol:parseFloat(cur.toFixed(0))};
+}
+
+function buildFullTA(k15,k1h,k4h,price,high24,low24){
+  var dec=price>=100?2:price>=1?4:5;
+  // Fib from 1H swing high/low (last 50 candles)
+  var h1Highs=k1h?k1h.map(function(k){return parseFloat(k[2]);}):[];
+  var h1Lows=k1h?k1h.map(function(k){return parseFloat(k[3]);}):[];
+  var swingHigh=h1Highs.length?Math.max.apply(null,h1Highs):high24;
+  var swingLow=h1Lows.length?Math.min.apply(null,h1Lows):low24;
+  var fib=calcFib(swingHigh,swingLow);
+
+  // S/R from each timeframe
+  var sr15=calcSupportResistance(k15,price);
+  var sr1h=calcSupportResistance(k1h,price);
+  var sr4h=calcSupportResistance(k4h,price);
+
+  // Volume profiles
+  var vol15=calcVolumeProfile(k15);
+  var vol1h=calcVolumeProfile(k1h);
+
+  // ATR for context
+  var atr15=k15?calcATR(k15):price*0.005;
+  var atr1h=k1h?calcATR(k1h):price*0.01;
+
+  // Nearest fib level to current price
+  var fibLevels=[
+    {name:'0.236',val:parseFloat(fib.p236)},
+    {name:'0.382',val:parseFloat(fib.p382)},
+    {name:'0.5',val:parseFloat(fib.p500)},
+    {name:'0.618',val:parseFloat(fib.p618)},
+    {name:'0.786',val:parseFloat(fib.p786)},
+  ];
+  var nearestFib=fibLevels.reduce(function(best,f){return Math.abs(f.val-price)<Math.abs(best.val-price)?f:best;},fibLevels[0]);
+
+  return{
+    fib:fib,swingHigh:swingHigh.toFixed(dec),swingLow:swingLow.toFixed(dec),
+    nearestFib:nearestFib,
+    sr15:sr15,sr1h:sr1h,sr4h:sr4h,
+    vol15:vol15,vol1h:vol1h,
+    atr15:atr15.toFixed(dec),atr1h:atr1h.toFixed(dec)
+  };
+}
+
+function buildFullTAString(liveData){
+  if(!liveData||!liveData.ta)return'';
+  var ta=liveData.ta,p=liveData.price,dec=p>=100?2:p>=1?4:5;
+  var out='';
+
+  // Price context
+  out+='\nPrice: $'+p.toFixed(dec)+' | 24h: '+(liveData.ch>=0?'+':'')+liveData.ch.toFixed(2)+'% | Vol: $'+liveData.vol24.toFixed(0)+'M';
+
+  // Timeframe TA
+  out+='\n\n--- 15m ---';
+  out+='\nRSI: '+liveData.m15.rsi+' | MAs: '+liveData.m15.maStack+' (MA5:'+liveData.m15.ma5.toFixed(dec)+' MA10:'+liveData.m15.ma10.toFixed(dec)+' MA20:'+liveData.m15.ma20.toFixed(dec)+')';
+  out+='\nPrice vs MAs: '+liveData.m15.pVsMA+' | MACD: '+(liveData.m15.macd.hist>0?'bull':'bear')+' | Candle: '+liveData.m15.candle;
+  out+='\nBB: Upper '+liveData.m15.bb.upper.toFixed(dec)+' / Lower '+liveData.m15.bb.lower.toFixed(dec);
+  out+='\nVolume: '+ta.vol15.trend+' (ratio vs avg: '+ta.vol15.ratio+'x)'+(ta.vol15.spike?' ⚠️ VOLUME SPIKE':'');
+  out+='\nATR(14): '+ta.atr15;
+  if(ta.sr15.support.length)out+='\nSupport: '+ta.sr15.support.join(', ');
+  if(ta.sr15.resistance.length)out+='\nResistance: '+ta.sr15.resistance.join(', ');
+
+  out+='\n\n--- 1H ---';
+  out+='\nRSI: '+liveData.h1.rsi+' | MAs: '+liveData.h1.maStack+' (MA5:'+liveData.h1.ma5.toFixed(dec)+' MA10:'+liveData.h1.ma10.toFixed(dec)+' MA20:'+liveData.h1.ma20.toFixed(dec)+')';
+  out+='\nPrice vs MAs: '+liveData.h1.pVsMA+' | MACD: '+(liveData.h1.macd.hist>0?'bull':'bear')+' | EMA200: '+(p>=liveData.h1.ema200?'above ✓':'below ✗');
+  out+='\nBB: Upper '+liveData.h1.bb.upper.toFixed(dec)+' / Lower '+liveData.h1.bb.lower.toFixed(dec);
+  out+='\nDivergence: '+liveData.h1.divergence+' | Candle: '+liveData.h1.candle;
+  out+='\nVolume: '+ta.vol1h.trend+' (ratio vs avg: '+ta.vol1h.ratio+'x)'+(ta.vol1h.spike?' ⚠️ VOLUME SPIKE':'');
+  out+='\nATR(14): '+ta.atr1h;
+  if(ta.sr1h.support.length)out+='\nSupport: '+ta.sr1h.support.join(', ');
+  if(ta.sr1h.resistance.length)out+='\nResistance: '+ta.sr1h.resistance.join(', ');
+
+  out+='\n\n--- 4H ---';
+  out+='\nRSI: '+liveData.h4.rsi+' | MAs: '+liveData.h4.maStack;
+  out+='\nMACD: '+(liveData.h4.macd&&liveData.h4.macd.hist>0?'bull':'bear')+' | Divergence: '+liveData.h4.divergence;
+  if(ta.sr4h.support.length)out+='\nSupport: '+ta.sr4h.support.join(', ');
+  if(ta.sr4h.resistance.length)out+='\nResistance: '+ta.sr4h.resistance.join(', ');
+
+  out+='\n\n--- FIBONACCI (1H swing '+ta.swingLow+' → '+ta.swingHigh+') ---';
+  out+='\n0.236: '+ta.fib.p236+' | 0.382: '+ta.fib.p382+' | 0.5: '+ta.fib.p500;
+  out+='\n0.618: '+ta.fib.p618+' | 0.786: '+ta.fib.p786;
+  out+='\nNearest fib to price: '+ta.nearestFib.name+' @ '+ta.nearestFib.val.toFixed(dec)+' ('+((p-ta.nearestFib.val)/p*100).toFixed(2)+'% away)';
+
+  return out;
 }
 
 function buildPrompt(mode,data,cfg){
@@ -1169,15 +1313,12 @@ async function sendChat(){
     var wantsJnl=jnlKeywords.some(function(k){return (text||'').toLowerCase().indexOf(k)>=0;});
     var journalCtx=wantsJnl?buildJournalContext():'';
     var greetingNote=chatMessageCount<=1?' Start with a brief casual greeting like "G\'day" on this first message only.':' Do not greet or re-introduce yourself - conversation is already in progress, just answer directly.';
-    var systemCtx='You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. Account: ~$1200 USD. MA5/MA10/MA20 + RSI across 15m/1H/4H. $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Sessions (AEST): Sydney 7am-4pm, Tokyo 9am-6pm, London 5pm-2am, NY 10pm-7am, overlap 10pm-2am (peak). Be direct, specific, conversational. No disclaimers. No filler. Max 4-5 sentences unless detail needed.'+greetingNote+(journalCtx?'\n\n'+journalCtx:'');
+    var systemCtx='You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. Crypto futures ONLY — never mention forex, stocks or other markets unless asked. Account: ~$1200 USD. MA5/MA10/MA20 + RSI across 15m/1H/4H. $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Sessions (AEST): Sydney 7am-4pm, Tokyo 9am-6pm, London 5pm-2am, NY 10pm-7am, overlap 10pm-2am (peak). When live TA data is provided, use ALL of it — RSI, MAs, fib levels, S/R, volume, BB, divergence — to give a complete analysis. Be direct, specific, no disclaimers, no filler.'+greetingNote+(journalCtx?'\n\n'+journalCtx:'');
 
     // Build user message content
     var userMsgText = text || 'Analyse this screenshot';
     if(liveData){
-      userMsgText+='\n\nLIVE DATA - '+liveData.sym+' @ $'+liveData.price+' | 24h: '+(liveData.ch>=0?'+':'')+liveData.ch.toFixed(2)+'%';
-      userMsgText+='\n15m: RSI '+liveData.m15.rsi+' | MAs '+liveData.m15.maStack+' | MACD '+(liveData.m15.macd.hist>0?'bull':'bear')+' | Candle '+liveData.m15.candle;
-      userMsgText+='\n1H:  RSI '+liveData.h1.rsi+' | MAs '+liveData.h1.maStack+' | EMA200 '+(liveData.price>=liveData.h1.ema200?'above':'below');
-      userMsgText+='\n4H:  RSI '+liveData.h4.rsi+' | MAs '+liveData.h4.maStack;
+      userMsgText+='\n\nFULL TA - '+liveData.sym+buildFullTAString(liveData);
     }else if(!pendingImages.length){
       if(results.length&&((text||'').toLowerCase().includes('best')||(text||'').toLowerCase().includes('top')||(text||'').toLowerCase().includes('scan'))){
         var top3=results.slice(0,3).map(function(c){return c.sym+': '+c.score+'/10 '+c.bias+' RSI1H:'+c.h1rsi;}).join(', ');
