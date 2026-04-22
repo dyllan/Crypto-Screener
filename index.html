@@ -1313,12 +1313,15 @@ async function sendChat(){
     var wantsJnl=jnlKeywords.some(function(k){return (text||'').toLowerCase().indexOf(k)>=0;});
     var journalCtx=wantsJnl?buildJournalContext():'';
     var greetingNote=chatMessageCount<=1?' Start with a brief casual greeting like "G\'day" on this first message only.':' Do not greet or re-introduce yourself - conversation is already in progress, just answer directly.';
-    var systemCtx='You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. Crypto futures ONLY — never mention forex, stocks or other markets unless asked. Account: ~$1200 USD. MA5/MA10/MA20 + RSI across 15m/1H/4H. $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Sessions (AEST): Sydney 7am-4pm, Tokyo 9am-6pm, London 5pm-2am, NY 10pm-7am, overlap 10pm-2am (peak). When live TA data is provided, use ALL of it — RSI, MAs, fib levels, S/R, volume, BB, divergence — to give a complete analysis. Be direct, specific, no disclaimers, no filler.'+greetingNote+(journalCtx?'\n\n'+journalCtx:'');
+    var systemCtx='You are a crypto futures trading assistant for Dyllan, a Gold Coast Australia trader using Bitget. Crypto futures ONLY — never mention forex, stocks or other markets unless asked. Account: ~$1200 USD. MA5/MA10/MA20 + RSI across 15m/1H/4H. $'+margin+' margin, '+lev+'x leverage ($'+notional+' notional). Sessions (AEST): Sydney 7am-4pm, Tokyo 9am-6pm, London 5pm-2am, NY 10pm-7am, overlap 10pm-2am (peak). Be direct, specific, conversational. No disclaimers. No filler. Max 4-5 sentences unless detail needed.'+greetingNote+(journalCtx?'\n\n'+journalCtx:'');
 
     // Build user message content
     var userMsgText = text || 'Analyse this screenshot';
     if(liveData){
-      userMsgText+='\n\nFULL TA - '+liveData.sym+buildFullTAString(liveData);
+      userMsgText+='\n\nLIVE DATA - '+liveData.sym+' @ $'+liveData.price.toFixed(4)+' | 24h: '+(liveData.ch>=0?'+':'')+liveData.ch.toFixed(2)+'%';
+      userMsgText+='\n15m: RSI '+liveData.m15.rsi+' | MAs '+liveData.m15.maStack+' | MACD '+(liveData.m15.macd.hist>0?'bull':'bear')+' | Candle '+liveData.m15.candle;
+      userMsgText+='\n1H:  RSI '+liveData.h1.rsi+' | MAs '+liveData.h1.maStack+' | EMA200 '+(liveData.price>=liveData.h1.ema200?'above':'below');
+      userMsgText+='\n4H:  RSI '+liveData.h4.rsi+' | MAs '+liveData.h4.maStack;
     }else if(!pendingImages.length){
       if(results.length&&((text||'').toLowerCase().includes('best')||(text||'').toLowerCase().includes('top')||(text||'').toLowerCase().includes('scan'))){
         var top3=results.slice(0,3).map(function(c){return c.sym+': '+c.score+'/10 '+c.bias+' RSI1H:'+c.h1rsi;}).join(', ');
@@ -1367,6 +1370,10 @@ async function sendChat(){
     chatHistory.push({role:'assistant',content:response});
     saveChatHistory();
 
+    // ── AUTO TRADE LOGGING ──────────────────────────────────────────────
+    detectAndLogTrade(text||'', response);
+    // ───────────────────────────────────────────────────────────────────
+
     // Clear pending images after send
     pendingImages=[];renderAttachments();
 
@@ -1377,6 +1384,175 @@ async function sendChat(){
 
   btn.disabled=false;btn.textContent='↑';document.getElementById('chatInput').focus();
 }
+
+// ── AUTO TRADE LOGGING FROM CHAT ───────────────────────────────────────────
+var activeChatTrade = null; // tracks open trade detected in chat
+
+function detectAndLogTrade(userText, aiResponse) {
+  var t = userText.toLowerCase();
+
+  // ── ENTRY DETECTION ──
+  // Patterns: "entered XRP short at 1.43", "in XRP long 1.43 $300 30x", "just shorted XRP at 1.43"
+  var entryPatterns = [
+    /(?:entered?|in|longed?|shorted?|opened?|just\s+(?:entered?|longed?|shorted?|opened?))\s+([A-Z]{2,6})(?:USDT)?\s+(?:(long|short)\s+)?(?:at\s+|@\s*)?([\d.]+)/i,
+    /([A-Z]{2,6})(?:USDT)?\s+(?:(long|short))\s+(?:at\s+|@\s*)?([\d.]+)/i,
+    /(?:(long|short)ing?)\s+([A-Z]{2,6})(?:USDT)?\s+(?:at\s+|@\s*)?([\d.]+)/i,
+  ];
+
+  // ── EXIT DETECTION ──
+  // Patterns: "closed at 1.41", "exited at 1.41", "tp hit", "sl hit", "out at 1.41"
+  var exitPatterns = [
+    /(?:closed?|exited?|out|bailed?|stopped?\s*out|tp\s*hit|sl\s*hit|take\s*profit|stop\s*loss)\s+(?:at\s+|@\s*)?([\d.]+)?/i,
+    /(?:at\s+|@\s*)([\d.]+)\s+(?:closed?|exited?|out)/i,
+  ];
+
+  // ── MARGIN/LEVERAGE DETECTION ──
+  function extractMarginLev(str) {
+    var margin = null, lev = null;
+    var mMatch = str.match(/\$\s*([\d.]+)\s*(?:margin|usd|usdt)?/i) || str.match(/([\d.]+)\s*(?:margin|usd\s+margin)/i);
+    var lMatch = str.match(/([\d.]+)\s*x(?:\s+leverage)?/i) || str.match(/leverage\s+([\d.]+)/i);
+    if (mMatch) margin = parseFloat(mMatch[1]);
+    if (lMatch) lev = parseFloat(lMatch[1]);
+    return { margin: margin, lev: lev };
+  }
+
+  // ── SL/TP DETECTION ──
+  function extractSLTP(str) {
+    var sl = null, tp = null;
+    var slMatch = str.match(/(?:sl|stop\s*loss|stop)\s*(?:at\s*|@\s*)?([\d.]+)/i);
+    var tpMatch = str.match(/(?:tp|take\s*profit|target)\s*(?:at\s*|@\s*)?([\d.]+)/i);
+    if (slMatch) sl = slMatch[1];
+    if (tpMatch) tp = tpMatch[1];
+    return { sl: sl, tp: tp };
+  }
+
+  // Check for entry
+  if (!activeChatTrade) {
+    for (var i = 0; i < entryPatterns.length; i++) {
+      var m = userText.match(entryPatterns[i]);
+      if (m) {
+        var sym, dir, entryPrice;
+        if (i === 2) { dir = m[1]; sym = m[2]; entryPrice = m[3]; }
+        else { sym = m[1]; dir = m[2]; entryPrice = m[3]; }
+        if (!entryPrice) continue;
+
+        sym = sym.toUpperCase();
+        if (!sym.endsWith('USDT')) sym = sym + 'USDT';
+        dir = dir ? dir.toUpperCase() : 'LONG';
+        if (dir === 'LONGED') dir = 'LONG';
+        if (dir === 'SHORTED') dir = 'SHORT';
+
+        var ml = extractMarginLev(userText);
+        var sltp = extractSLTP(userText);
+        var margin = ml.margin || parseFloat(document.getElementById('margin').value) || 150;
+        var lev = ml.lev || parseFloat(document.getElementById('leverage').value) || 25;
+
+        activeChatTrade = {
+          id: Date.now(),
+          sym: sym,
+          dir: dir,
+          entry: parseFloat(entryPrice),
+          margin: margin,
+          lev: lev,
+          sl: sltp.sl || '',
+          tp: sltp.tp || '',
+          date: new Date().toLocaleDateString('en-AU'),
+          time: new Date().toLocaleTimeString('en-AU', { hour12: false }),
+          price: entryPrice,
+          screenerBias: dir === 'LONG' ? 'LONG' : 'SHORT',
+          screenerScore: '-',
+          aiVerdict: dir === 'LONG' ? 'LONG' : 'SHORT',
+          allTF: null,
+          result: null,
+          pnl: null
+        };
+
+        // Log to journal immediately as open trade
+        jnlTrades.unshift(activeChatTrade);
+        saveJnl();
+        populateJournalDropdown();
+
+        // Show confirmation in chat
+        setTimeout(function() {
+          var msgs = document.getElementById('chatMsgs');
+          var notif = document.createElement('div');
+          notif.style.cssText = 'align-self:center;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);border-radius:8px;padding:6px 12px;font-size:11px;color:#00e676;font-family:monospace;margin:4px 0;';
+          notif.textContent = '📓 Trade logged: ' + activeChatTrade.sym + ' ' + dir + ' @ ' + entryPrice + ' ($' + margin + ' × ' + lev + 'x)';
+          msgs.appendChild(notif);
+          msgs.scrollTop = msgs.scrollHeight;
+        }, 300);
+        break;
+      }
+    }
+  }
+
+  // Check for exit (only if we have an active trade)
+  if (activeChatTrade) {
+    for (var j = 0; j < exitPatterns.length; j++) {
+      var em = userText.match(exitPatterns[j]);
+      // Also check for explicit close keywords even without price
+      var hasCloseKeyword = /(?:closed?|exited?|bailed?|stopped?\s*out|tp\s*hit|sl\s*hit)/i.test(t);
+      if (em || hasCloseKeyword) {
+        var exitPrice = em && em[1] ? parseFloat(em[1]) : null;
+
+        // Try to extract price from context if not found
+        if (!exitPrice) {
+          var priceMatch = userText.match(/(?:at\s+|@\s*)([\d.]+)/);
+          if (priceMatch) exitPrice = parseFloat(priceMatch[1]);
+        }
+
+        if (exitPrice && activeChatTrade.entry) {
+          var notional = activeChatTrade.margin * activeChatTrade.lev;
+          var isLong = activeChatTrade.dir === 'LONG';
+          var pnl = isLong
+            ? ((exitPrice - activeChatTrade.entry) / activeChatTrade.entry) * notional
+            : ((activeChatTrade.entry - exitPrice) / activeChatTrade.entry) * notional;
+          pnl = parseFloat(pnl.toFixed(2));
+
+          // Update the journal trade
+          var trade = jnlTrades.find(function(tr) { return tr.id === activeChatTrade.id; });
+          if (trade) {
+            trade.result = pnl >= 0 ? 'WIN' : 'LOSS';
+            trade.pnl = pnl;
+            saveJnl();
+          }
+
+          var closedTrade = activeChatTrade;
+          activeChatTrade = null;
+
+          setTimeout(function() {
+            var msgs = document.getElementById('chatMsgs');
+            var notif = document.createElement('div');
+            var pnlCol = pnl >= 0 ? '#00e676' : '#ff3d57';
+            notif.style.cssText = 'align-self:center;background:rgba(255,215,64,0.08);border:1px solid rgba(255,215,64,0.3);border-radius:8px;padding:6px 12px;font-size:11px;color:#ffd740;font-family:monospace;margin:4px 0;';
+            notif.innerHTML = '📓 Trade closed: ' + closedTrade.sym + ' exit @ ' + exitPrice + ' → <span style="color:' + pnlCol + ';font-weight:700;">' + (pnl >= 0 ? '+' : '') + '$' + pnl + '</span>';
+            msgs.appendChild(notif);
+            msgs.scrollTop = msgs.scrollHeight;
+          }, 300);
+        }
+        break;
+      }
+    }
+
+    // Update SL/TP if mentioned for active trade
+    var sltp2 = extractSLTP(userText);
+    var trade2 = jnlTrades.find(function(tr) { return tr.id === activeChatTrade.id; });
+    if (trade2) {
+      if (sltp2.sl && !trade2.sl) { trade2.sl = sltp2.sl; activeChatTrade.sl = sltp2.sl; saveJnl(); }
+      if (sltp2.tp && !trade2.tp) { trade2.tp = sltp2.tp; activeChatTrade.tp = sltp2.tp; saveJnl(); }
+    }
+  }
+}
+
+function extractSLTP(str) {
+  var sl = null, tp = null;
+  var slMatch = str.match(/(?:sl|stop\s*loss|stop)\s*(?:at\s*|@\s*)?([\d.]+)/i);
+  var tpMatch = str.match(/(?:tp|take\s*profit|target)\s*(?:at\s*|@\s*)?([\d.]+)/i);
+  if (slMatch) sl = slMatch[1];
+  if (tpMatch) tp = tpMatch[1];
+  return { sl: sl, tp: tp };
+}
+// ── END AUTO TRADE LOGGING ─────────────────────────────────────────────────
 
 function saveSettings(){localStorage.setItem('hrd_margin',document.getElementById('margin').value);localStorage.setItem('hrd_leverage',document.getElementById('leverage').value);localStorage.setItem('hrd_riskpct',document.getElementById('riskpct').value);localStorage.setItem('hrd_minvol',document.getElementById('minvol').value);}
 function loadSettings(){var m=localStorage.getItem('hrd_margin'),l=localStorage.getItem('hrd_leverage'),r=localStorage.getItem('hrd_riskpct'),v=localStorage.getItem('hrd_minvol');if(m)document.getElementById('margin').value=m;if(l)document.getElementById('leverage').value=l;if(r)document.getElementById('riskpct').value=r;if(v)document.getElementById('minvol').value=v;}
